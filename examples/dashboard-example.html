@@ -1,0 +1,1930 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JTBD-анализ аудитории — Практикум по вайбкодингу</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface-2: #1a1a26;
+    --surface-3: #22223a;
+    --border: #2a2a3e;
+    --text: #e8e8f0;
+    --text-dim: #8888a8;
+    --accent: #6c5ce7;
+    --accent-light: #a29bfe;
+    --green: #00cec9;
+    --green-dim: #00cec920;
+    --orange: #e17055;
+    --orange-dim: #e1705520;
+    --yellow: #fdcb6e;
+    --yellow-dim: #fdcb6e20;
+    --pink: #fd79a8;
+    --pink-dim: #fd79a820;
+    --blue: #74b9ff;
+    --blue-dim: #74b9ff20;
+    --red: #ff6b6b;
+    --red-dim: #ff6b6b20;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding: 2rem 0;
+  }
+
+  .header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent-light), var(--green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+  }
+
+  .header .subtitle {
+    color: var(--text-dim);
+    font-size: 1rem;
+  }
+
+  .stats-row {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .stat-badge {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.75rem 1.25rem;
+    text-align: center;
+  }
+
+  .stat-badge .num {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--accent-light);
+  }
+
+  .stat-badge .label {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── Level 1: Section buttons ── */
+  .nav-sections {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .nav-section-btn {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 18px;
+    padding: 1.1rem 1rem;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    user-select: none;
+  }
+
+  .nav-section-btn:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px #6c5ce720;
+  }
+
+  .nav-section-btn.active {
+    border-color: var(--accent);
+    background: linear-gradient(135deg, #6c5ce715, #6c5ce705);
+    box-shadow: 0 4px 16px #6c5ce730;
+  }
+
+  .nav-section-btn[data-section="day1"].active { border-color: var(--accent); }
+  .nav-section-btn[data-section="day2"].active { border-color: var(--green); background: linear-gradient(135deg, #00cec915, #00cec905); box-shadow: 0 4px 16px #00cec930; }
+  .nav-section-btn[data-section="compare"].active { border-color: var(--yellow); background: linear-gradient(135deg, #fdcb6e15, #fdcb6e05); box-shadow: 0 4px 16px #fdcb6e30; }
+  .nav-section-btn[data-section="op"].active { border-color: var(--pink); background: linear-gradient(135deg, #fd79a815, #fd79a805); box-shadow: 0 4px 16px #fd79a830; }
+
+  .nav-section-btn[data-section="day2"]:hover { border-color: var(--green); box-shadow: 0 8px 24px #00cec720; }
+  .nav-section-btn[data-section="compare"]:hover { border-color: var(--yellow); box-shadow: 0 8px 24px #fdcb6e20; }
+  .nav-section-btn[data-section="op"]:hover { border-color: var(--pink); box-shadow: 0 8px 24px #fd79a820; }
+
+  .nav-section-icon { font-size: 1.6rem; margin-bottom: 0.4rem; }
+
+  .nav-section-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    margin-bottom: 0.25rem;
+    color: var(--text);
+  }
+
+  .nav-section-desc {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    line-height: 1.4;
+  }
+
+  /* ── Level 2: Sub-tabs ── */
+  .subtabs {
+    display: flex;
+    gap: 0.4rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    padding: 0.75rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+  }
+
+  .subtab {
+    padding: 0.45rem 1rem;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+
+  .subtab:hover { background: var(--surface-2); color: var(--text); }
+  .subtab.active { background: var(--accent); color: #fff; }
+
+  #subtabs-day2 .subtab.active { background: var(--green); }
+
+  /* Section */
+  .section { display: none; animation: fadeIn 0.3s ease; }
+  .section.active { display: block; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  .section-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* Portraits */
+  .portrait-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .portrait-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .portrait-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .portrait-card.p1::before { background: linear-gradient(90deg, var(--green), var(--blue)); }
+  .portrait-card.p2::before { background: linear-gradient(90deg, var(--orange), var(--yellow)); }
+  .portrait-card.p3::before { background: linear-gradient(90deg, var(--pink), var(--accent-light)); }
+
+  .portrait-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .portrait-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .p1 .portrait-avatar { background: var(--green-dim); }
+  .p2 .portrait-avatar { background: var(--orange-dim); }
+  .p3 .portrait-avatar { background: var(--pink-dim); }
+
+  .portrait-name { font-size: 1.1rem; font-weight: 700; }
+  .portrait-desc { font-size: 0.8rem; color: var(--text-dim); margin-top: 2px; }
+
+  .portrait-tag {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-right: 0.3rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .tag-green { background: var(--green-dim); color: var(--green); }
+  .tag-orange { background: var(--orange-dim); color: var(--orange); }
+  .tag-pink { background: var(--pink-dim); color: var(--pink); }
+  .tag-blue { background: var(--blue-dim); color: var(--blue); }
+  .tag-yellow { background: var(--yellow-dim); color: var(--yellow); }
+
+  .portrait-section-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+    margin: 1rem 0 0.5rem;
+  }
+
+  .portrait-list { list-style: none; }
+  .portrait-list li {
+    padding: 0.4rem 0;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .portrait-list li::before { content: '→'; color: var(--accent-light); flex-shrink: 0; }
+  .pain-list li::before { content: '✗'; color: var(--red); }
+  .want-list li::before { content: '◆'; color: var(--green); }
+  .need-list li::before { content: '⊹'; color: var(--yellow); }
+
+  .quote-box {
+    background: var(--surface-2);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 0.6rem 0.8rem;
+    margin: 0.5rem 0;
+    font-size: 0.8rem;
+    font-style: italic;
+    color: var(--text-dim);
+  }
+
+  .quote-author {
+    font-style: normal;
+    font-weight: 600;
+    color: var(--accent-light);
+  }
+
+  /* Bar charts */
+  .bar-chart { margin-bottom: 2rem; }
+
+  .bar-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+
+  .bar-item:hover { transform: translateX(4px); }
+
+  .bar-label {
+    width: 200px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .bar-track {
+    flex: 1;
+    height: 36px;
+    background: var(--surface);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid var(--border);
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 8px;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    padding-left: 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #fff;
+    min-width: 40px;
+  }
+
+  .bar-count {
+    font-size: 0.8rem;
+    font-weight: 700;
+    width: 50px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  /* Detail panels */
+  .detail-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .detail-panel.open { display: block; }
+
+  .detail-panel h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+
+  /* Recommendations */
+  .rec-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    position: relative;
+  }
+
+  .rec-card::before {
+    content: attr(data-num);
+    position: absolute;
+    top: -10px;
+    left: 20px;
+    background: var(--accent);
+    color: #fff;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 800;
+  }
+
+  .rec-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .rec-card p { font-size: 0.85rem; color: var(--text-dim); line-height: 1.7; }
+  .rec-card .highlight {
+    color: var(--green);
+    font-weight: 700;
+  }
+
+  .rec-card .rec-why {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.8rem;
+  }
+
+  .rec-card .rec-why strong { color: var(--accent-light); }
+
+  /* Offer section */
+  .offer-box {
+    background: linear-gradient(135deg, var(--surface-2), var(--surface-3));
+    border: 2px solid var(--accent);
+    border-radius: 20px;
+    padding: 2rem;
+    margin: 2rem 0;
+    text-align: center;
+  }
+
+  .offer-box h2 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+  }
+
+  .offer-box p {
+    font-size: 1rem;
+    color: var(--text-dim);
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.8;
+  }
+
+  .offer-pillars {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .offer-pillar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    text-align: left;
+  }
+
+  .offer-pillar .pillar-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+  .offer-pillar h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .offer-pillar p { font-size: 0.78rem; color: var(--text-dim); text-align: left; }
+
+  /* Words section */
+  .words-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .word-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+  }
+
+  .word-card .word-text {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+
+  .word-card .word-context {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+  }
+
+  .use-badge {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .use-badge.do { background: var(--green-dim); color: var(--green); }
+  .use-badge.dont { background: var(--red-dim); color: var(--red); }
+
+  /* Tab group labels */
+  .tab-group-label {
+    display: flex;
+    align-items: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+    padding: 0 0.3rem;
+    white-space: nowrap;
+    align-self: center;
+  }
+
+  .tab.tab-day2 { border-color: #00cec940; }
+  .tab.tab-day2:hover { border-color: var(--green); color: var(--green); }
+  .tab.tab-day2.active { background: var(--green); border-color: var(--green); color: #0a0a0f; }
+
+  .tab.tab-compare { border-color: var(--yellow-dim); }
+  .tab.tab-compare:hover { border-color: var(--yellow); color: var(--yellow); }
+  .tab.tab-compare.active { background: var(--yellow); border-color: var(--yellow); color: #0a0a0f; }
+
+  .tab.tab-op { border-color: #fd79a840; }
+  .tab.tab-op:hover { border-color: var(--pink); color: var(--pink); }
+  .tab.tab-op.active { background: var(--pink); border-color: var(--pink); color: #0a0a0f; }
+
+  /* OP section styles */
+  .op-hero {
+    background: linear-gradient(135deg, #1a0a14, #1a0a1a);
+    border: 1px solid #fd79a830;
+    border-radius: 20px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2rem;
+  }
+  .op-hero h2 { font-size: 1.2rem; font-weight: 800; color: var(--pink); margin-bottom: 0.5rem; }
+  .op-hero p { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 1rem; }
+
+  .objection-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .objection-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    border-radius: 4px 0 0 4px;
+  }
+  .objection-card.critical::before { background: var(--red); }
+  .objection-card.high::before { background: var(--orange); }
+  .objection-card.medium::before { background: var(--yellow); }
+  .objection-card.low::before { background: var(--blue); }
+
+  .objection-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .objection-title { font-size: 1rem; font-weight: 700; }
+  .objection-freq {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+  }
+  .freq-critical { background: #ff6b6b25; color: var(--red); }
+  .freq-high { background: #e1705525; color: var(--orange); }
+  .freq-medium { background: #fdcb6e25; color: var(--yellow); }
+  .freq-low { background: #74b9ff25; color: var(--blue); }
+
+  .objection-quotes { margin: 0.5rem 0; }
+  .objection-content-tip {
+    margin-top: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: var(--surface-2);
+    border-radius: 10px;
+    border-left: 3px solid var(--green);
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+  .objection-content-tip strong { color: var(--green); }
+
+  /* Day 2 stats row */
+  .day2-hero {
+    background: linear-gradient(135deg, #0a1a14, #0f1a2a);
+    border: 1px solid #00cec930;
+    border-radius: 20px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .day2-hero h2 { font-size: 1.2rem; font-weight: 800; color: var(--green); margin-bottom: 0.5rem; }
+  .day2-hero p { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 1rem; }
+
+  /* Insight cards */
+  .insight-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .insight-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.25rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .insight-card.positive { border-color: #00cec940; }
+  .insight-card.positive::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--green), #55efc4); }
+  .insight-card.warning { border-color: #fdcb6e40; }
+  .insight-card.warning::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--yellow), #e17055); }
+  .insight-card.neutral { border-color: #74b9ff40; }
+  .insight-card.neutral::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--blue), var(--accent-light)); }
+
+  .insight-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+  .insight-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.4rem; }
+  .insight-text { font-size: 0.8rem; color: var(--text-dim); line-height: 1.6; }
+
+  /* Compare section */
+  .compare-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .compare-col {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.25rem;
+  }
+
+  .compare-col.day1 { border-top: 3px solid var(--accent); }
+  .compare-col.day2 { border-top: 3px solid var(--green); }
+
+  .compare-col-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1rem;
+  }
+
+  .compare-col.day1 .compare-col-title { color: var(--accent-light); }
+  .compare-col.day2 .compare-col-title { color: var(--green); }
+
+  .compare-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+
+  .compare-stat:last-child { border-bottom: none; }
+  .compare-stat-val { font-weight: 700; color: var(--accent-light); }
+  .compare-col.day2 .compare-stat-val { color: var(--green); }
+
+  .delta-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+
+  .delta-up { background: #00cec920; color: var(--green); }
+  .delta-down { background: #ff6b6b20; color: var(--red); }
+  .delta-same { background: var(--surface-2); color: var(--text-dim); }
+
+  .shift-card {
+    background: var(--surface-2);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .shift-card .shift-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
+  .shift-card .shift-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.2rem; }
+  .shift-card .shift-text { font-size: 0.8rem; color: var(--text-dim); line-height: 1.6; }
+
+  @media (max-width: 768px) {
+    .compare-row { grid-template-columns: 1fr; }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .bar-label { width: 120px; font-size: 0.75rem; }
+    .portrait-grid { grid-template-columns: 1fr; }
+    .header h1 { font-size: 1.5rem; }
+    .container { padding: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>Анализ целевой аудитории</h1>
+    <div class="subtitle">Практикум по вайбкодингу · 9–11 марта 2026 · Данные из чата вебинара</div>
+    <div class="stats-row">
+      <div class="stat-badge"><div class="num">685</div><div class="label">участников</div></div>
+      <div class="stat-badge"><div class="num">3 615</div><div class="label">сообщений</div></div>
+      <div class="stat-badge"><div class="num">9</div><div class="label">Jobs to be Done</div></div>
+      <div class="stat-badge"><div class="num">18</div><div class="label">ниш аудитории</div></div>
+    </div>
+  </div>
+
+  <!-- Level 1: Section buttons -->
+  <div class="nav-sections">
+    <div class="nav-section-btn active" data-section="day1" onclick="showSection('day1')">
+      <div class="nav-section-icon">📅</div>
+      <div class="nav-section-title">День 1</div>
+      <div class="nav-section-desc">Портреты, Jobs, боли, ниши</div>
+    </div>
+    <div class="nav-section-btn" data-section="day2" onclick="showSection('day2')">
+      <div class="nav-section-icon">📅</div>
+      <div class="nav-section-title">День 2</div>
+      <div class="nav-section-desc">Обзор, Jobs, продукты, ниши</div>
+    </div>
+    <div class="nav-section-btn" data-section="compare" onclick="showSection('compare')">
+      <div class="nav-section-icon">📊</div>
+      <div class="nav-section-title">Изменения ЦА</div>
+      <div class="nav-section-desc">Сравнение дней, динамика</div>
+    </div>
+    <div class="nav-section-btn" data-section="op" onclick="showSection('op')">
+      <div class="nav-section-icon">📞</div>
+      <div class="nav-section-title">Возражения ОП</div>
+      <div class="nav-section-desc">ТОП-10 + рекомендации</div>
+    </div>
+  </div>
+
+  <!-- Level 2: Sub-tabs -->
+  <div class="subtabs" id="subtabs-day1">
+    <div class="subtab active" data-tab="portraits" onclick="showTab('portraits', this)">Портреты ЦА</div>
+    <div class="subtab" data-tab="jobs" onclick="showTab('jobs', this)">Jobs to be Done</div>
+    <div class="subtab" data-tab="pains" onclick="showTab('pains', this)">Боли и страхи</div>
+    <div class="subtab" data-tab="products" onclick="showTab('products', this)">Желаемые продукты</div>
+    <div class="subtab" data-tab="professions" onclick="showTab('professions', this)">Ниши аудитории</div>
+    <div class="subtab" data-tab="recs" onclick="showTab('recs', this)">Рекомендации</div>
+    <div class="subtab" data-tab="offer" onclick="showTab('offer', this)">Оффер</div>
+  </div>
+  <div class="subtabs" id="subtabs-day2" style="display:none">
+    <div class="subtab active" data-tab="day2-overview" onclick="showTab('day2-overview', this)">Обзор дня 2</div>
+    <div class="subtab" data-tab="day2-jobs" onclick="showTab('day2-jobs', this)">Jobs to be Done</div>
+    <div class="subtab" data-tab="day2-products" onclick="showTab('day2-products', this)">Продукты</div>
+    <div class="subtab" data-tab="day2-professions" onclick="showTab('day2-professions', this)">Ниши аудитории</div>
+  </div>
+
+  <!-- TAB: Portraits -->
+  <div class="section active" id="portraits">
+    <div class="section-title">ТОП-3 портрета целевой аудитории</div>
+
+    <div class="portrait-grid">
+
+      <!-- Portrait 1 -->
+      <div class="portrait-card p1">
+        <div class="portrait-header">
+          <div class="portrait-avatar">🔧</div>
+          <div>
+            <div class="portrait-name">«Хочу создать и заработать»</div>
+            <div class="portrait-desc">~40% аудитории · 108+ человек</div>
+          </div>
+        </div>
+
+        <div>
+          <span class="portrait-tag tag-green">наёмный работник</span>
+          <span class="portrait-tag tag-green">30-55 лет</span>
+          <span class="portrait-tag tag-blue">есть идея</span>
+          <span class="portrait-tag tag-yellow">нет техзнаний</span>
+        </div>
+
+        <div class="portrait-section-label">Кто это</div>
+        <p style="font-size:0.85rem;color:var(--text-dim)">Инженер, медсестра, водитель, продавец — работает в найме или на фрилансе. Зарабатывает немного. Увидел возможности ИИ и хочет создать бота/приложение/сайт, чтобы заработать первые деньги. Техзнаний ноль или минимум.</p>
+
+        <div class="portrait-section-label">Желания</div>
+        <ul class="portrait-list want-list">
+          <li>Создать конкретный продукт (бот, приложение) под свою нишу</li>
+          <li>Заработать первые 10-30 тыс ₽ за время практикума</li>
+          <li>Получить пошаговую систему «сделал → продал → получил деньги»</li>
+          <li>Работать удалённо, из дома</li>
+        </ul>
+
+        <div class="portrait-section-label">Боли</div>
+        <ul class="portrait-list pain-list">
+          <li>Не знает КАК зарабатывать на вайбкодинге — нет схемы</li>
+          <li>«Когда Дима делает — всё понятно, а самостоятельно — затыки»</li>
+          <li>Пробовал в AI Studio — работает. Вынести за пределы — не получается</li>
+          <li>Не понимает про хостинг, домены, API, серверы</li>
+        </ul>
+
+        <div class="portrait-section-label">Потребности (что закроет покупку)</div>
+        <ul class="portrait-list need-list">
+          <li>Пошаговая инструкция: промпт → прототип → рабочая ссылка → клиент</li>
+          <li>Ведение за руку — не «вот вам урок», а «делаем вместе»</li>
+          <li>Конкретный результат за 3 дня, не теория</li>
+        </ul>
+
+        <div class="quote-box">
+          «Определиться, на чём в принципе можно начать зарабатывать с нуля для чайника. И — начать!»
+          <div class="quote-author">— Александр</div>
+        </div>
+        <div class="quote-box">
+          «15 приложений работающих в студии и ни одного работающего за её пределами»
+          <div class="quote-author">— Мария (повторила 5 раз)</div>
+        </div>
+      </div>
+
+      <!-- Portrait 2 -->
+      <div class="portrait-card p2">
+        <div class="portrait-header">
+          <div class="portrait-avatar">🏪</div>
+          <div>
+            <div class="portrait-name">«У меня бизнес — хочу автоматизировать»</div>
+            <div class="portrait-desc">~25% аудитории · 34+ человек</div>
+          </div>
+        </div>
+
+        <div>
+          <span class="portrait-tag tag-orange">владелец бизнеса</span>
+          <span class="portrait-tag tag-orange">35-55 лет</span>
+          <span class="portrait-tag tag-blue">есть клиенты</span>
+          <span class="portrait-tag tag-yellow">нет времени</span>
+        </div>
+
+        <div class="portrait-section-label">Кто это</div>
+        <p style="font-size:0.85rem;color:var(--text-dim)">Владелец малого бизнеса — суши-бар, ремонт, юрфирма, агентство недвижимости, салон красоты. У него уже есть клиенты и продукт. Но слишком много рутины, дорогие разработчики, нет автоматизации. Хочет бота-автоответчика, CRM, калькулятор для клиентов.</p>
+
+        <div class="portrait-section-label">Желания</div>
+        <ul class="portrait-list want-list">
+          <li>Автоматизировать операционку — бот вместо менеджера</li>
+          <li>Масштабировать бизнес без найма новых людей</li>
+          <li>Создать инструмент для клиентов (калькулятор, каталог, бот)</li>
+          <li>Сделать самому, а не платить 200-500 тыс разработчикам</li>
+        </ul>
+
+        <div class="portrait-section-label">Боли</div>
+        <ul class="portrait-list pain-list">
+          <li>Много рутины — не хватает рук и времени</li>
+          <li>Разработчики дорого и долго, результат непредсказуемый</li>
+          <li>Не может довести прототип до рабочего продукта</li>
+          <li>Не понимает куда разместить, как привязать домен</li>
+        </ul>
+
+        <div class="portrait-section-label">Потребности (что закроет покупку)</div>
+        <ul class="portrait-list need-list">
+          <li>Готовые шаблоны под бизнес-ниши (общепит, ремонт, услуги)</li>
+          <li>Полный цикл: от идеи до работающей ссылки, без программистов</li>
+          <li>Понимание стоимости и ROI — «окупится за N дней»</li>
+        </ul>
+
+        <div class="quote-box">
+          «Хочу чтобы клиент общался не с оператором, а с ботом-ИИ»
+          <div class="quote-author">— Михаил (суши-бар)</div>
+        </div>
+        <div class="quote-box">
+          «Масштабирование и автоматизация через мобильное приложение — оказание юридических услуг»
+          <div class="quote-author">— Гурам (к.ю.н.)</div>
+        </div>
+      </div>
+
+      <!-- Portrait 3 -->
+      <div class="portrait-card p3">
+        <div class="portrait-header">
+          <div class="portrait-avatar">🔄</div>
+          <div>
+            <div class="portrait-name">«Хочу сменить жизнь»</div>
+            <div class="portrait-desc">~20% аудитории · пенсионеры + безработные + уставшие</div>
+          </div>
+        </div>
+
+        <div>
+          <span class="portrait-tag tag-pink">пенсионер</span>
+          <span class="portrait-tag tag-pink">безработный</span>
+          <span class="portrait-tag tag-pink">45-70 лет</span>
+          <span class="portrait-tag tag-yellow">навыков ноль</span>
+        </div>
+
+        <div class="portrait-section-label">Кто это</div>
+        <p style="font-size:0.85rem;color:var(--text-dim)">Пенсионер, бывший инженер/учитель/юрист. Или человек в кризисе — потерял работу, обанкротился, устал от найма. Денег не хватает. Увидел в ИИ шанс на новую жизнь. Технически — полный ноль, иногда только смартфон. Но есть жизненный опыт и мотивация.</p>
+
+        <div class="portrait-section-label">Желания</div>
+        <ul class="portrait-list want-list">
+          <li>Почувствовать себя нужным, доказать что «ещё могу»</li>
+          <li>Подработка 10-30 тыс ₽ к пенсии / основной доход</li>
+          <li>Освоить новый навык — «не остаться в прошлом»</li>
+          <li>Работать из дома (здоровье, возраст, география)</li>
+        </ul>
+
+        <div class="portrait-section-label">Боли</div>
+        <ul class="portrait-list pain-list">
+          <li>«Пенсии не хватает» — финансовый вопрос остро</li>
+          <li>«Я не знаю, чем могу быть полезной» — потеря идентичности</li>
+          <li>Технический барьер: VPN, регистрации, подписки</li>
+          <li>«Навыков ноль» — страх что слишком сложно</li>
+        </ul>
+
+        <div class="portrait-section-label">Потребности (что закроет покупку)</div>
+        <ul class="portrait-list need-list">
+          <li>Максимально простые инструкции — «нажми эту кнопку»</li>
+          <li>Живая поддержка и чат — не остаться одному</li>
+          <li>История успеха «такого же как я» — пенсионер, новичок</li>
+        </ul>
+
+        <div class="quote-box">
+          «Пенсионерка — не знаю, чем могу быть полезной. Хочу зарабатывать.»
+          <div class="quote-author">— Ольга Мерджанова</div>
+        </div>
+        <div class="quote-box">
+          «Лежачий инвалид 18 лет. Дополнительный заработок.»
+          <div class="quote-author">— Андрей</div>
+        </div>
+        <div class="quote-box">
+          «Женщина, 68 лет, живущая возле леса, выучив ИИ за месяц — сейчас 120 000 р зарабатывает»
+          <div class="quote-author">— Раф (история, которая мотивирует эту группу)</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TAB: Jobs -->
+  <div class="section" id="jobs">
+    <div class="section-title">Jobs to be Done — от большего к меньшему</div>
+    <p style="color:var(--text-dim);margin-bottom:1.5rem;font-size:0.85rem">Что люди на самом деле хотят? Отсортировано по количеству уникальных людей. Кликните на строку, чтобы увидеть цитаты.</p>
+
+    <div class="bar-chart" id="jobs-chart"></div>
+  </div>
+
+  <!-- TAB: Pains -->
+  <div class="section" id="pains">
+    <div class="section-title">Боли и страхи — от большего к меньшему</div>
+    <p style="color:var(--text-dim);margin-bottom:1.5rem;font-size:0.85rem">Что мешает людям действовать? Что их тормозит?</p>
+
+    <div class="bar-chart" id="pains-chart"></div>
+
+    <div style="margin-top:2rem">
+      <div class="section-title" style="font-size:1.1rem">Ключевые цитаты страхов</div>
+
+      <div class="quote-box" style="margin-bottom:0.75rem">
+        «Когда ты делаешь — всё понятно, а самостоятельно порой возникают затыки»
+        <div class="quote-author">— Оля · Страх «не получится одному»</div>
+      </div>
+      <div class="quote-box" style="margin-bottom:0.75rem">
+        «15 приложений отлично работающих в пределах студии и ни одного адекватно работающего за её пределами. Появляется куча нюансов и ошибок. Каждый раз новых.»
+        <div class="quote-author">— Мария · Техническая пропасть</div>
+      </div>
+      <div class="quote-box" style="margin-bottom:0.75rem">
+        «Я не умею предлагать свои услуги»
+        <div class="quote-author">— Светлана · Страх продаж</div>
+      </div>
+      <div class="quote-box" style="margin-bottom:0.75rem">
+        «Мне всегда кажется, что у потенциальных клиентов нет денег»
+        <div class="quote-author">— Венера · Ограничивающее убеждение</div>
+      </div>
+      <div class="quote-box" style="margin-bottom:0.75rem">
+        «Я точно знаю что могу продать почти всё, а потом сижу и думаю — а если не смогу, а если не сделаю качественно»
+        <div class="quote-author">— Ермаков Антон · Синдром самозванца</div>
+      </div>
+      <div class="quote-box" style="margin-bottom:0.75rem">
+        «Google AI Studio не заходит, блочит регион, не могу зайти уже много дней»
+        <div class="quote-author">— DJ · Блокировки РФ</div>
+      </div>
+      <div class="quote-box" style="margin-bottom:0.75rem">
+        «Так он ещё и платный? 100 долларов отбивать несколько лет»
+        <div class="quote-author">— Юра · Страх вложений</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: Products -->
+  <div class="section" id="products">
+    <div class="section-title">Какие продукты хотят создать — от большего к меньшему</div>
+    <p style="color:var(--text-dim);margin-bottom:1.5rem;font-size:0.85rem">Конкретные типы продуктов, которые люди называли в чате.</p>
+
+    <div class="bar-chart" id="products-chart"></div>
+
+    <div style="margin-top:2rem">
+      <div class="section-title" style="font-size:1.1rem">Конкретные идеи из чата (для примеров в контенте)</div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem">
+        <div class="word-card">
+          <div class="word-text">Бот-заказчик для суши-бара</div>
+          <div class="word-context">Михаил: «Клиент заказывает в ВК-группе роллы — надо чтобы общался не с оператором, а с ботом-ИИ»</div>
+        </div>
+        <div class="word-card">
+          <div class="word-text">CRM для маркетплейса</div>
+          <div class="word-context">Ирина: «Мне нужна CRM, я уже начала делать свою — остальные неудобные»</div>
+        </div>
+        <div class="word-card">
+          <div class="word-text">Приложение-диагност по анализам</div>
+          <div class="word-context">Татьяна: «Показывает дефициты, ставит диагноз, даёт рекомендации по питанию»</div>
+        </div>
+        <div class="word-card">
+          <div class="word-text">Калькулятор ремонта</div>
+          <div class="word-context">Показан на вебинаре — вызвал сильную реакцию «хочу такой для своей ниши»</div>
+        </div>
+        <div class="word-card">
+          <div class="word-text">Тревел-приложение для города</div>
+          <div class="word-context">Олеся: «Турист узнаёт куда сходить, где поесть, составить маршрут»</div>
+        </div>
+        <div class="word-card">
+          <div class="word-text">Юр-приложение для банкротства</div>
+          <div class="word-context">Гурам: «Мобильное приложение для банкротства физических лиц»</div>
+        </div>
+        <div class="word-card">
+          <div class="word-text">Парсер цен конкурентов</div>
+          <div class="word-context">Ерлан: «Как сделать парсинг цен конкурентов с сайтов?»</div>
+        </div>
+        <div class="word-card">
+          <div class="word-text">Обучающее приложение для детей</div>
+          <div class="word-context">Elvira: «С отслеживанием успехов, мотивацией»</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: Professions -->
+  <div class="section" id="professions">
+    <div class="section-title">Ниши аудитории — от большего к меньшему</div>
+    <p style="color:var(--text-dim);margin-bottom:1.5rem;font-size:0.85rem">В каких сферах работают участники. По количеству уникальных людей.</p>
+
+    <div class="bar-chart" id="professions-chart"></div>
+  </div>
+
+  <!-- TAB: Recommendations -->
+  <div class="section" id="recs">
+    <div class="section-title">Рекомендации для презентации оффера</div>
+    <p style="color:var(--text-dim);margin-bottom:2rem;font-size:0.85rem">На основе данных — что говорить, как говорить, в каком порядке.</p>
+
+    <div class="rec-card" data-num="1">
+      <h3>Говори «ЗАРАБОТАТЬ», не «НАУЧИТЬСЯ»</h3>
+      <p>118 уникальных людей из 685 написали про деньги. Это их <span class="highlight">главная мотивация</span>. Они пришли не за знаниями — за доходом. В каждом слайде, посте, рассылке — начинай с результата в деньгах, не с процесса.</p>
+      <div class="rec-why"><strong>Данные:</strong> «Заработать» — Job #1 по уникальным людям (118). «Научиться» — даже не в топ-5.</div>
+    </div>
+
+    <div class="rec-card" data-num="2">
+      <h3>Показывай полный путь: Идея → Продукт → Клиент → Деньги</h3>
+      <p>Главный GAP аудитории — <span class="highlight">между прототипом и деньгами</span>. Они умеют делать прототип в AI Studio. Но не знают как вынести за пределы, где разместить, как передать клиенту, как взять оплату. Покажи весь путь в 4 шага.</p>
+      <div class="rec-why"><strong>Данные:</strong> «Довести до продакшна» — 43 упоминания. Мария написала об этом 5 раз (!). «Как код превратить в продукт?» — Константин.</div>
+    </div>
+
+    <div class="rec-card" data-num="3">
+      <h3>Делай акцент на БОТАХ, не на «приложениях»</h3>
+      <p>206 упоминаний ботов vs 103 приложений. Бот в Telegram — это <span class="highlight">понятно, близко, знакомо</span>. Приложение — пугает (хостинг, домен, деплой). Говори «бот», «мини-приложение в Telegram», «чат-бот» — это снижает барьер входа.</p>
+      <div class="rec-why"><strong>Данные:</strong> Телеграм-бот — 206 упоминаний (#1). Приложение — 103 (#2). Разница в 2 раза.</div>
+    </div>
+
+    <div class="rec-card" data-num="4">
+      <h3>Закрывай страх «самостоятельно не получится»</h3>
+      <p>49 сообщений о страхе «не справлюсь». Ключевая фраза: <span class="highlight">«Когда ты делаешь — всё понятно, а самостоятельно — затыки»</span>. Покажи что на траектории вы делаете ВМЕСТЕ: живые сессии, менторство, чат поддержки. Не «вот вам курс», а «я рядом».</p>
+      <div class="rec-why"><strong>Данные:</strong> Страх «не получится» — 30 упоминаний. Техническая беспомощность — 19. Итого 49 — самый массивный блок тревоги.</div>
+    </div>
+
+    <div class="rec-card" data-num="5">
+      <h3>Используй примеры под ТОП-5 ниш</h3>
+      <p>Не говори абстрактно «создадите продукт». Говори конкретно под их ниши:<br>
+      <span class="highlight">IT/Digital</span> (60 чел) — «бот-автоответчик для SMM-агентства»<br>
+      <span class="highlight">Образование</span> (30) — «репетитор-бот по математике для школьников»<br>
+      <span class="highlight">Строительство</span> (22) — «калькулятор стоимости ремонта для бригады»<br>
+      <span class="highlight">Сетевой маркетинг</span> (18) — «бот привлечения партнёров в сеть»<br>
+      <span class="highlight">Пенсионеры</span> (21) — «подработка на создании ботов для знакомых»</p>
+      <div class="rec-why"><strong>Данные:</strong> ТОП-5 ниш покрывают 151 уникального человека — 22% всей аудитории.</div>
+    </div>
+
+    <div class="rec-card" data-num="6">
+      <h3>Дай ответ на «кому продавать и за сколько»</h3>
+      <p>72 человека думают про продажи. 35 — ищут клиентов. Их тормозит не умение создавать, а <span class="highlight">неумение продавать</span>. В оффере: «Дам готовые скрипты, покажу где взять первых 3 клиентов, научу называть цену».</p>
+      <div class="rec-why"><strong>Данные:</strong> «Научиться продавать» — Job #3 (72 человека). «Найти клиентов» — Job #5 (35). Итого 107 человек с проблемой монетизации.</div>
+    </div>
+
+    <div class="rec-card" data-num="7">
+      <h3>Используй социальное доказательство из чата</h3>
+      <p>В чате уже есть готовый кейс: <span class="highlight">Тутси — «уже продала 2 приложения и чат-бот, рассрочку полностью закрыла»</span>. И мотивирующая история: «Женщина 68 лет зарабатывает 120 000 ₽». Используй эти цитаты дословно — они бьют точно в аудиторию.</p>
+      <div class="rec-why"><strong>Данные:</strong> Прямые цитаты из чата того же вебинара — максимальная релевантность.</div>
+    </div>
+
+    <div style="margin-top:2.5rem">
+      <div class="section-title" style="font-size:1.1rem">Язык аудитории — используй дословно</div>
+      <div class="words-grid">
+        <div class="word-card"><span class="use-badge do">используй</span><div class="word-text">«Хочу зарабатывать из дома»</div></div>
+        <div class="word-card"><span class="use-badge do">используй</span><div class="word-text">«Делать просто, но быстро»</div></div>
+        <div class="word-card"><span class="use-badge do">используй</span><div class="word-text">«Конкретное решение — конкретный результат»</div></div>
+        <div class="word-card"><span class="use-badge do">используй</span><div class="word-text">«То, что можно сразу показать клиенту»</div></div>
+        <div class="word-card"><span class="use-badge do">используй</span><div class="word-text">«Первые клиенты и заявки»</div></div>
+        <div class="word-card"><span class="use-badge do">используй</span><div class="word-text">«Автоматизация, которая экономит часы»</div></div>
+        <div class="word-card"><span class="use-badge do">используй</span><div class="word-text">«Не хочу возвращаться в найм»</div></div>
+        <div class="word-card"><span class="use-badge do">используй</span><div class="word-text">«Пенсии не хватает»</div></div>
+        <div class="word-card"><span class="use-badge dont">не используй</span><div class="word-text">«MVP», «скейлить», «product-market fit»</div></div>
+        <div class="word-card"><span class="use-badge dont">не используй</span><div class="word-text">«инновации», «трансформация», «экосистема»</div></div>
+        <div class="word-card"><span class="use-badge dont">не используй</span><div class="word-text">Английские термины без перевода</div></div>
+        <div class="word-card"><span class="use-badge dont">не используй</span><div class="word-text">«деплой», «рефакторинг», «API»</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: Offer -->
+  <div class="section" id="offer">
+    <div class="section-title">Структура оффера — на основе данных</div>
+
+    <div class="offer-box">
+      <h2>Формулировка оффера</h2>
+      <p>За время траектории вы <strong style="color:var(--green)">создадите свой цифровой продукт</strong> (бот, мини-приложение, сайт) под свою нишу, <strong style="color:var(--green)">получите систему привлечения клиентов</strong> и <strong style="color:var(--green)">заработаете первые деньги</strong> — даже если никогда не программировали и боитесь продавать.</p>
+    </div>
+
+    <div class="section-title" style="font-size:1.1rem;margin-top:2rem">3 столпа оффера (по данным аудитории)</div>
+
+    <div class="offer-pillars">
+      <div class="offer-pillar">
+        <div class="pillar-icon">⊹</div>
+        <h4>Столп 1: Создание продукта</h4>
+        <p>Закрывает Job #1 (108 человек). «Создадите рабочий продукт — бот или мини-приложение — за 3 дня практикума. Не прототип в студии, а рабочую ссылку, которую можно отправить клиенту.»</p>
+      </div>
+      <div class="offer-pillar">
+        <div class="pillar-icon">⊹</div>
+        <h4>Столп 2: Система продаж</h4>
+        <p>Закрывает Job #2-3 (118+72 человека). «Получите готовые скрипты продаж, узнаете где искать первых клиентов и сколько брать за свои продукты. Даже если вы никогда не продавали.»</p>
+      </div>
+      <div class="offer-pillar">
+        <div class="pillar-icon">⊹</div>
+        <h4>Столп 3: Поддержка и ведение</h4>
+        <p>Закрывает страх #1 (49 сообщений). «Не курс с видео — а живое сопровождение. Делаем вместе, разбираем ваш проект, помогаем довести до результата. Вы не останетесь один.»</p>
+      </div>
+    </div>
+
+    <div style="margin-top:2.5rem">
+      <div class="section-title" style="font-size:1.1rem">Что говорить про каждый портрет</div>
+
+      <div class="rec-card" data-num="П1" style="border-left:3px solid var(--green)">
+        <h3>Портрет 1 — «Хочу создать и заработать» (40%)</h3>
+        <p><strong>Посыл:</strong> «Ты создашь свой первый продукт и заработаешь на нём — я проведу тебя за руку от идеи до первых денег»</p>
+        <p style="margin-top:0.5rem"><strong>Ключевые слова:</strong> первые деньги, конкретный результат, пошагово, делаем вместе, без кода</p>
+        <p style="margin-top:0.5rem"><strong>Закрывает:</strong> «не знаю как зарабатывать» + «самостоятельно не получится»</p>
+      </div>
+
+      <div class="rec-card" data-num="П2" style="border-left:3px solid var(--orange)">
+        <h3>Портрет 2 — «Есть бизнес, хочу автоматизировать» (25%)</h3>
+        <p><strong>Посыл:</strong> «Создашь бота/приложение для своего бизнеса сам — быстрее и дешевле, чем нанять программиста»</p>
+        <p style="margin-top:0.5rem"><strong>Ключевые слова:</strong> автоматизация, без программиста, экономия времени, масштабирование</p>
+        <p style="margin-top:0.5rem"><strong>Закрывает:</strong> «разработчики дорого» + «не могу вынести из студии»</p>
+      </div>
+
+      <div class="rec-card" data-num="П3" style="border-left:3px solid var(--pink)">
+        <h3>Портрет 3 — «Хочу сменить жизнь» (20%)</h3>
+        <p><strong>Посыл:</strong> «Даже если тебе 60+ и ты никогда не программировал — люди как ты уже зарабатывают. Покажу как.»</p>
+        <p style="margin-top:0.5rem"><strong>Ключевые слова:</strong> из дома, без опыта, новая профессия, подработка, поддержка</p>
+        <p style="margin-top:0.5rem"><strong>Закрывает:</strong> «я не знаю чем быть полезным» + «навыков ноль» + «пенсии не хватает»</p>
+      </div>
+    </div>
+
+    <div style="margin-top:2.5rem">
+      <div class="section-title" style="font-size:1.1rem">Порядок аргументов в презентации (от сильного к слабому)</div>
+
+      <div style="display:flex;flex-direction:column;gap:0.5rem">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem;display:flex;align-items:center;gap:1rem">
+          <div style="background:var(--green-dim);color:var(--green);width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0">1</div>
+          <div><strong>Результат в деньгах</strong> — покажи кейс (Тутси продала 2 приложения, закрыла рассрочку)</div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem;display:flex;align-items:center;gap:1rem">
+          <div style="background:var(--green-dim);color:var(--green);width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0">2</div>
+          <div><strong>Конкретный продукт</strong> — «вы создадите бота / мини-приложение / калькулятор под СВОЮ нишу»</div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem;display:flex;align-items:center;gap:1rem">
+          <div style="background:var(--green-dim);color:var(--green);width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0">3</div>
+          <div><strong>Система клиентов</strong> — «покажу где найти первых 3 клиентов + скрипты продаж»</div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem;display:flex;align-items:center;gap:1rem">
+          <div style="background:var(--surface-2);color:var(--text-dim);width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0">4</div>
+          <div><strong>Поддержка</strong> — «не один, а с ментором и группой. Делаем вместе»</div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem;display:flex;align-items:center;gap:1rem">
+          <div style="background:var(--surface-2);color:var(--text-dim);width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0">5</div>
+          <div><strong>Доступность</strong> — «без кода, без IT-знаний, даже если вам 60+»</div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem;display:flex;align-items:center;gap:1rem">
+          <div style="background:var(--surface-2);color:var(--text-dim);width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0">6</div>
+          <div><strong>Формат</strong> — живые сессии, не запись. Результат за время обучения, не «когда-нибудь потом»</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== ДЕНЬ 2 ==================== -->
+
+  <!-- TAB: Day 2 Overview -->
+  <div class="section" id="day2-overview">
+    <div class="day2-hero">
+      <h2>День 2 — Анализ аудитории</h2>
+      <p>Данные из чата второго эфира · 458 участников · 2 403 сообщения</p>
+      <div class="stats-row" style="justify-content:flex-start;margin-top:0">
+        <div class="stat-badge"><div class="num" style="color:var(--green)">458</div><div class="label">участников</div></div>
+        <div class="stat-badge"><div class="num" style="color:var(--green)">2 403</div><div class="label">сообщений</div></div>
+        <div class="stat-badge"><div class="num" style="color:var(--green)">1 118</div><div class="label">осмысленных</div></div>
+        <div class="stat-badge"><div class="num" style="color:var(--green)">8</div><div class="label">Jobs to be Done</div></div>
+      </div>
+    </div>
+
+    <div class="section-title" style="font-size:1.1rem">Ключевые сдвиги — что изменилось</div>
+
+    <div class="insight-grid">
+      <div class="insight-card positive">
+        <div class="insight-icon">🎯</div>
+        <div class="insight-title">Аудитория стала горячее</div>
+        <div class="insight-text">Из 685 человек дня 1 осталось 458 — это самые мотивированные. Они пришли снова, значит уже доверяют. Это тёплая аудитория, готовая к офферу.</div>
+      </div>
+      <div class="insight-card positive">
+        <div class="insight-icon">📦</div>
+        <div class="insight-title">Хотят продавать, не только делать</div>
+        <div class="insight-text">Job «Научиться продавать» взлетел с #3 до #2 (71 упоминание). После демо бота — они поняли что это реально и думают как это продать. Момент для оффера идеальный.</div>
+      </div>
+      <div class="insight-card positive">
+        <div class="insight-icon">🤖</div>
+        <div class="insight-title">AI-агенты зашли</div>
+        <div class="insight-text">В день 2 появился новый тип продукта — «AI-агент» (18 упоминаний). До дня 1 этого слова вообще не было. Они услышали про агентов и хотят разобраться — крючок сработал.</div>
+      </div>
+      <div class="insight-card warning">
+        <div class="insight-icon">💸</div>
+        <div class="insight-title">Страх «дорого» вышел на #1</div>
+        <div class="insight-text">В день 1 «дорого» было #4 страхом. В день 2 — уже #1 с 39 упоминаниями. Они чувствуют что скоро будет оффер. Нужно отработать возражение по цене ДО объявления стоимости.</div>
+      </div>
+      <div class="insight-card neutral">
+        <div class="insight-icon">🔧</div>
+        <div class="insight-title">Инструменты — главная боль дня</div>
+        <div class="insight-text">Job #1 дня 2 — «Разобраться в инструментах» (98 упоминаний). Lovable не работает через VPN, ошибки 404, бесплатный тариф. Это сигнал: добавить в оффер техподдержку и инструкцию по доступу.</div>
+      </div>
+      <div class="insight-card neutral">
+        <div class="insight-icon">🏗️</div>
+        <div class="insight-title">IT/Digital снова #1 ниша</div>
+        <div class="insight-text">SMM-специалисты, дизайнеры, разработчики — 38 уникальных человек. Они понимают ценность быстрее всех. За ними — маркетплейсы (12) и образование (10).</div>
+      </div>
+    </div>
+
+    <div class="section-title" style="font-size:1.1rem;margin-top:1rem">ТОП цитаты дня 2</div>
+
+    <div class="quote-box" style="font-size:0.85rem;margin-bottom:0.75rem"><span class="quote-author">Алмаз:</span> «Я после эфира попробовал создать бота для анализа, и к моему удивлению получилось. Да он хиленький, но он сработал»</div>
+    <div class="quote-box" style="font-size:0.85rem;margin-bottom:0.75rem"><span class="quote-author">Валентина Лагуткина:</span> «Дмитрий, круто вчера было. И я вчера создала первое своё приложение — Калькулятор экономии для клиентов сетевой компании»</div>
+    <div class="quote-box" style="font-size:0.85rem;margin-bottom:0.75rem"><span class="quote-author">Anatolii:</span> «За время практикума я хочу создать конкретный продукт — Приложение которое помогает подбирать автомобиль на российском рынке в текущих реалиях под запрос человека»</div>
+    <div class="quote-box" style="font-size:0.85rem;margin-bottom:0.75rem"><span class="quote-author">Павел Гильманов:</span> «Генерация постов и прогревов с визуалом. Могу сделать и продавать — спрос есть»</div>
+    <div class="quote-box" style="font-size:0.85rem;margin-bottom:0.75rem"><span class="quote-author">Матиас Каспаров:</span> «Дмитрий, я не очень понимаю, где именно стоит начинать это всё делать — у меня ничего не работает» <em style="color:var(--yellow)">(→ кандидат на техподдержку в оффере)</em></div>
+  </div>
+
+  <!-- TAB: Day 2 Jobs -->
+  <div class="section" id="day2-jobs">
+    <div class="section-title">Jobs to be Done — День 2</div>
+    <p style="color:var(--text-dim);margin-bottom:0.5rem;font-size:0.85rem">Нажми на строку — увидишь цитаты из чата.</p>
+    <p style="color:var(--yellow);margin-bottom:1.5rem;font-size:0.82rem">⚡ Изменение vs День 1: «Разобраться в инструментах» вышел на #1. «Продавать» поднялся с #3 на #2. Аудитория перешла от мечты к действию.</p>
+    <div class="bar-chart" id="d2-jobs-chart"></div>
+  </div>
+
+  <!-- TAB: Day 2 Products -->
+  <div class="section" id="day2-products">
+    <div class="section-title">Какие продукты хотят создать — День 2</div>
+    <p style="color:var(--text-dim);margin-bottom:0.5rem;font-size:0.85rem">По количеству упоминаний в чате.</p>
+    <p style="color:var(--green);margin-bottom:1.5rem;font-size:0.82rem">✦ Новинка дня 2: «AI-агент» появился в списке впервые (18 упоминаний) — люди услышали про агентов и хотят их создавать.</p>
+    <div class="bar-chart" id="d2-products-chart"></div>
+  </div>
+
+  <!-- TAB: Day 2 Professions -->
+  <div class="section" id="day2-professions">
+    <div class="section-title">Ниши аудитории — День 2</div>
+    <p style="color:var(--text-dim);margin-bottom:1.5rem;font-size:0.85rem">Состав аудитории по профессиям. IT/Digital сохраняет лидерство — эти люди понимают ценность быстрее всех.</p>
+    <div class="bar-chart" id="d2-professions-chart"></div>
+  </div>
+
+  <!-- ==================== ВОЗРАЖЕНИЯ ОП ==================== -->
+
+  <div class="section" id="compare">
+    <div class="section-title">📊 Сравнение дней — как менялась аудитория</div>
+
+    <!-- Stats comparison -->
+    <div class="compare-row">
+      <div class="compare-col day1">
+        <div class="compare-col-title">День 1 — 9 марта</div>
+        <div class="compare-stat"><span>Участников</span><span class="compare-stat-val">685</span></div>
+        <div class="compare-stat"><span>Сообщений</span><span class="compare-stat-val">3 615</span></div>
+        <div class="compare-stat"><span>Job #1</span><span class="compare-stat-val" style="font-size:0.75rem">Заработать деньги (118)</span></div>
+        <div class="compare-stat"><span>Job #2</span><span class="compare-stat-val" style="font-size:0.75rem">Создать продукт (108)</span></div>
+        <div class="compare-stat"><span>Страх #1</span><span class="compare-stat-val" style="font-size:0.75rem">Не получится (49)</span></div>
+        <div class="compare-stat"><span>Продукт #1</span><span class="compare-stat-val" style="font-size:0.75rem">Телеграм-бот (206)</span></div>
+        <div class="compare-stat"><span>Ниша #1</span><span class="compare-stat-val" style="font-size:0.75rem">IT/Digital (60 ч.)</span></div>
+      </div>
+      <div class="compare-col day2">
+        <div class="compare-col-title">День 2 — 10 марта</div>
+        <div class="compare-stat">
+          <span>Участников</span>
+          <span style="display:flex;align-items:center;gap:0.5rem">
+            <span class="compare-stat-val">458</span>
+            <span class="delta-badge delta-down">↓ 33%</span>
+          </span>
+        </div>
+        <div class="compare-stat">
+          <span>Сообщений</span>
+          <span style="display:flex;align-items:center;gap:0.5rem">
+            <span class="compare-stat-val">2 403</span>
+            <span class="delta-badge delta-down">↓ 34%</span>
+          </span>
+        </div>
+        <div class="compare-stat"><span>Job #1</span><span class="compare-stat-val" style="font-size:0.75rem">Инструменты (98) <span class="delta-badge delta-up">↑ новый</span></span></div>
+        <div class="compare-stat"><span>Job #2</span><span class="compare-stat-val" style="font-size:0.75rem">Продавать (71) <span class="delta-badge delta-up">↑ с #3</span></span></div>
+        <div class="compare-stat"><span>Страх #1</span><span class="compare-stat-val" style="font-size:0.75rem">Дорого (39) <span class="delta-badge delta-up">↑ с #4</span></span></div>
+        <div class="compare-stat"><span>Продукт #1</span><span class="compare-stat-val" style="font-size:0.75rem">Телеграм-бот (129) <span class="delta-badge delta-same">= лидер</span></span></div>
+        <div class="compare-stat"><span>Ниша #1</span><span class="compare-stat-val" style="font-size:0.75rem">IT/Digital (38 ч.) <span class="delta-badge delta-same">= лидер</span></span></div>
+      </div>
+    </div>
+
+    <!-- Key shifts -->
+    <div class="section-title" style="font-size:1.1rem">Что это значит для дня 3 и оффера</div>
+
+    <div class="shift-card">
+      <div class="shift-icon">🔥</div>
+      <div>
+        <div class="shift-title">Они готовы покупать — но нужно убрать страх цены</div>
+        <div class="shift-text">Страх «дорого» с #4 поднялся на #1 — значит они думают об оффере. Нужно заякорить ROI ДО объявления цены: «За сколько я продал за 5 дней» → «Значит за 1 месяц работы траектория окупится». Цену называть после истории заработка.</div>
+      </div>
+    </div>
+
+    <div class="shift-card">
+      <div class="shift-icon">📈</div>
+      <div>
+        <div class="shift-title">«Продавать» важнее «создавать» — это новый крючок</div>
+        <div class="shift-text">В день 1 они хотели создать продукт. В день 2 они хотят продавать. Значит в офферном блоке нужно показать не только «как создать», но и «как найти первого клиента за 24 часа» — это закроет главный Gap дня 2.</div>
+      </div>
+    </div>
+
+    <div class="shift-card">
+      <div class="shift-icon">🤖</div>
+      <div>
+        <div class="shift-title">AI-агенты открыли новую мотивацию</div>
+        <div class="shift-text">18 упоминаний «агента» в день 2 — слова вообще не было в день 1. Блок про агентов сработал как крючок. Используй это в офферном блоке: «В траектории — отдельный модуль по созданию AI-агентов для бизнеса».</div>
+      </div>
+    </div>
+
+    <div class="shift-card">
+      <div class="shift-icon">⚠️</div>
+      <div>
+        <div class="shift-title">Инструменты блокируют — дай решение в первые 5 минут дня 3</div>
+        <div class="shift-text">98 упоминаний проблем с Lovable, VPN, бесплатными тарифами. Начни день 3 с быстрого solution: «Если Lovable не работает — вот альтернатива». Это уберёт барьер и настроит аудиторию на действие, а не на жалобы.</div>
+      </div>
+    </div>
+
+    <!-- Charts comparison -->
+    <div class="section-title" style="font-size:1.1rem;margin-top:2rem">Jobs сравнение — оба дня</div>
+    <div class="compare-row">
+      <div class="compare-col day1">
+        <div class="compare-col-title">День 1 — топ Jobs</div>
+        <div class="bar-chart" id="compare-d1-jobs"></div>
+      </div>
+      <div class="compare-col day2">
+        <div class="compare-col-title">День 2 — топ Jobs</div>
+        <div class="bar-chart" id="compare-d2-jobs"></div>
+      </div>
+    </div>
+
+    <div class="section-title" style="font-size:1.1rem;margin-top:1rem">Страхи — оба дня</div>
+    <div class="compare-row">
+      <div class="compare-col day1">
+        <div class="compare-col-title">День 1 — страхи</div>
+        <div class="bar-chart" id="compare-d1-pains"></div>
+      </div>
+      <div class="compare-col day2">
+        <div class="compare-col-title">День 2 — страхи</div>
+        <div class="bar-chart" id="compare-d2-pains"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== ВОЗРАЖЕНИЯ ОП ==================== -->
+
+  <div class="section" id="op-objections">
+    <div class="op-hero">
+      <h2>Возражения от отдела продаж</h2>
+      <p>Анализ 155 звонков ОП · 10–11 марта 2026 · Реальные фразы клиентов из разговоров с менеджерами</p>
+      <div class="stats-row" style="justify-content:flex-start;margin-top:0">
+        <div class="stat-badge"><div class="num" style="color:var(--pink)">155</div><div class="label">звонков</div></div>
+        <div class="stat-badge"><div class="num" style="color:var(--green)">~100</div><div class="label">целевых</div></div>
+        <div class="stat-badge"><div class="num" style="color:var(--red)">~55</div><div class="label">нецелевых</div></div>
+        <div class="stat-badge"><div class="num" style="color:var(--yellow)">10</div><div class="label">типов возражений</div></div>
+      </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="section-title" style="font-size:1.1rem">ТОП-10 возражений — частота встречаемости</div>
+    <p style="color:var(--text-dim);font-size:0.82rem;margin-bottom:1.5rem">Нажми на строку — увидишь реальные цитаты и рекомендацию по контенту.</p>
+    <div class="bar-chart" id="op-objections-chart"></div>
+
+    <!-- Detailed objections -->
+    <div class="section-title" style="font-size:1.1rem;margin-top:2rem">Разбор каждого возражения + как закрыть контентом</div>
+
+    <!-- 1 -->
+    <div class="objection-card critical">
+      <div class="objection-header">
+        <div class="objection-title">1. Дорого / нет денег / не могу позволить</div>
+        <span class="objection-freq freq-critical">Критично · ~50 упоминаний</span>
+      </div>
+      <div class="objection-quotes">
+        <div class="quote-box">«Цена смущает, да. Очень-очень смущает» — Татьяна, Краснодарский край</div>
+        <div class="quote-box">«99 000 — финансовые возражения. Потому что 99 000 у вас тариф этот стоит» — маркетолог, 10 лет на курсе Эксперт</div>
+        <div class="quote-box">«Для меня нереально — цена 100 000 или даже 5 000 в месяц» — доход арестован приставами</div>
+        <div class="quote-box">«А если бы зарплаты были соизмеримы... оплатила бы хоть сейчас» — Татьяна</div>
+        <div class="quote-box">«Максимум три тысячи смогу» — сетевой бизнес с убытками</div>
+      </div>
+      <div class="objection-content-tip">
+        <strong>Как закрыть в эфире:</strong> Покажи ROI до объявления цены. «Я заработал 300 000 за 5 дней по 3-4 часа. Один проект окупил траекторию в 3 раза». Потом: «Какая у вас сумма в час, если вы возьмёте один такой проект?» — пусть сами посчитают окупаемость. Не называй цену первым.
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="objection-card critical">
+      <div class="objection-header">
+        <div class="objection-title">2. Проблемы с рассрочкой — банки отказывают, банкротство, арест счетов</div>
+        <span class="objection-freq freq-critical">Критично · ~30 упоминаний</span>
+      </div>
+      <div class="objection-quotes">
+        <div class="quote-box">«Банки... у меня там самозапрет стоит» — самозанятый ~45 лет</div>
+        <div class="quote-box">«Банкротство действует до ноября; кредит/рассрочка от банков невозможны» — хочет помочь другу</div>
+        <div class="quote-box">«Неодобрение рассрочки банком по возрасту» — пенсионерка 80 лет, Крым</div>
+        <div class="quote-box">«Плохая кредитная история. Доход 70 000 руб.» — хочет 10 000/мес. комфортный платёж</div>
+      </div>
+      <div class="objection-content-tip">
+        <strong>Как закрыть в эфире:</strong> Проговори варианты оплаты явно: «Мы знаем, что рассрочка в банках одобряется не всем. Поэтому у нас есть внутренняя рассрочка / разные банки / Сплит / Яндекс-рассрочка. ОП поможет найти вариант именно под вас». Убери страх «я не смогу оформить».
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="objection-card high">
+      <div class="objection-header">
+        <div class="objection-title">3. Нет времени / занят / не попадаю по графику</div>
+        <span class="objection-freq freq-high">Часто · ~20 упоминаний</span>
+      </div>
+      <div class="objection-quotes">
+        <div class="quote-box">«Пока нет времени на это», «Нет, пока не до этого» — нецелевые</div>
+        <div class="quote-box">«Не попадаю, потому что в ночную смену уезжаю, времени не хватает»</div>
+        <div class="quote-box">«У меня сейчас тоже идёт обучение... ещё месяц» — программист + маркетплейсы</div>
+        <div class="quote-box">«Слишком длинные эфиры, к девяти часам мозг уже выключился» — эксперт по бизнес-процессам</div>
+      </div>
+      <div class="objection-content-tip">
+        <strong>Как закрыть в эфире:</strong> «3-4 часа в день — столько я тратил на проект который принёс 300К. Траектория — это не обучение по 8 часов в день. Это конкретные сессии + поддержка в чате. Подстраивается под ваш ритм». Запись остаётся. Нет жёсткого расписания.
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="objection-card high">
+      <div class="objection-header">
+        <div class="objection-title">4. Уже учусь / слишком много курсов / не освоила предыдущее</div>
+        <span class="objection-freq freq-high">Часто · ~18 упоминаний</span>
+      </div>
+      <div class="objection-quotes">
+        <div class="quote-box">«Я ещё на «Эксперте», и я не до конца его прошла» — маркетолог</div>
+        <div class="quote-box">«Три текущих обучения, финансовая нагрузка» — ведущий свадеб, хочет 100К/мес.</div>
+        <div class="quote-box">«Думаю: то не освоила до конца, а уже новое» — старый клиент с годовым курсом</div>
+        <div class="quote-box">«Нет времени, нет финансов, уже учится в другой программе»</div>
+      </div>
+      <div class="objection-content-tip">
+        <strong>Как закрыть в эфире:</strong> «Если у вас уже много теории — вам тем более нужна практика. Траектория не учит с нуля, она берёт то что вы уже знаете и превращает в деньги. Это не курс — это проект». Подчеркнуть что это ДЕЙСТВИЕ, а не очередное обучение.
+      </div>
+    </div>
+
+    <!-- 5 -->
+    <div class="objection-card high">
+      <div class="objection-header">
+        <div class="objection-title">5. «Я подумаю» / нужно время / пока не готова</div>
+        <span class="objection-freq freq-high">Часто · ~15 упоминаний</span>
+      </div>
+      <div class="objection-quotes">
+        <div class="quote-box">«Давайте я подумаю над этим» — не озвучила явных возражений по цене</div>
+        <div class="quote-box">«Я подумаю, сейчас пока не готова» — маркетолог, чувствительна к цене</div>
+        <div class="quote-box">«Пока не готова — хочу сначала посмотреть эфиры, и уже понять» — технический специалист</div>
+        <div class="quote-box">«Буду смотреть третий день, потом буду дальше» — опытный в IT</div>
+      </div>
+      <div class="objection-content-tip">
+        <strong>Как закрыть в эфире:</strong> Создать дедлайн без давления: «Оффер с этой ценой — только до конца третьего дня. Не потому что мы давим, а потому что набор закрывается и я беру ограниченное количество людей в сопровождение». Покажи цену ожидания: «За время пока вы думаете — кто-то уже зарабатывает».
+      </div>
+    </div>
+
+    <!-- 6 -->
+    <div class="objection-card medium">
+      <div class="objection-header">
+        <div class="objection-title">6. Не верю в результат / предыдущие неудачи / скептицизм</div>
+        <span class="objection-freq freq-medium">Средне · ~12 упоминаний</span>
+      </div>
+      <div class="objection-quotes">
+        <div class="quote-box">«Не оправдал ожидания», «Предыдущие неудачи бьют по голове», «Не успевал за всеми» — ведущий свадеб, старый клиент</div>
+        <div class="quote-box">«Whitecoding столько не стоит. Наверное, не стоит столько» — один из первых выпускников</div>
+        <div class="quote-box">«Скептицизм к платному обучению, считает рынок перенасыщенным, не видит уникальной ценности» — предприниматель</div>
+        <div class="quote-box">«Не верится мне в это», «Не вижу больших денег» — безработный, Казахстан</div>
+        <div class="quote-box">«Обучение закончилось — не к кому обратиться» — есть вопросы постфактум</div>
+      </div>
+      <div class="objection-content-tip">
+        <strong>Как закрыть в эфире:</strong> Показать РЕАЛЬНЫЕ результаты учеников — не истории успеха, а конкретные скриншоты, суммы, ниши. «Вот Алмаз — сделал бота вчера вечером после первого дня». Ключ: результаты за ДНИ, а не за месяцы. Скептик убеждается скоростью, а не объёмом.
+      </div>
+    </div>
+
+    <!-- 7 -->
+    <div class="objection-card medium">
+      <div class="objection-header">
+        <div class="objection-title">7. Не понимаю что получу / нет ясности по продукту</div>
+        <span class="objection-freq freq-medium">Средне · ~10 упоминаний</span>
+      </div>
+      <div class="objection-quotes">
+        <div class="quote-box">«Не знаю, что будет в этой программе и сколько стоит. Будет ли там вот эта информация?» — опытный пользователь</div>
+        <div class="quote-box">«Не видит нужных технологий в курсе — нет Postgres, локальных моделей ИИ» — технарь с опытом</div>
+        <div class="quote-box">«Сомнения в объёме токенов — это мало, по-моему» — старый клиент</div>
+        <div class="quote-box">«Я не знаю ни цену, ни что будет даваться» — развивается в крипто-обучении</div>
+      </div>
+      <div class="objection-content-tip">
+        <strong>Как закрыть в эфире:</strong> Показать программу ЯВНО. Слайд со структурой: «Блок 1 — создание продукта. Блок 2 — упаковка. Блок 3 — первая продажа. Блок 4 — AI-агенты». Не «вы научитесь», а «вы сделаете». Конкретный план — главный антидот к «не понимаю что там».
+      </div>
+    </div>
+
+    <!-- 8 -->
+    <div class="objection-card medium">
+      <div class="objection-header">
+        <div class="objection-title">8. Страх не справиться / «самостоятельно не смогу»</div>
+        <span class="objection-freq freq-medium">Средне · ~10 упоминаний</span>
+      </div>
+      <div class="objection-quotes">
+        <div class="quote-box">«Самостоятельно вряд ли смогу разобраться» — работает с текстами</div>
+        <div class="quote-box">«Мне надо, чтобы взяли за руку и повели» — новичок, доход 70К</div>
+        <div class="quote-box">«Мне очень сложно» — пенсионерка, хочет 50К доп. дохода</div>
+        <div class="quote-box">«Сложность и запутанность обучения, нехватка времени, недопонимание, где и как реализовывать» — покупала ранее</div>
+        <div class="quote-box">«Запутанное обучение», «где у нас сбой в понимании» — старый клиент с 12 часами работы</div>
+      </div>
+      <div class="objection-content-tip">
+        <strong>Как закрыть в эфире:</strong> Продать сопровождение, а не продукт. «Вы не один — я рядом. Живые сессии где мы делаем вместе. Закрытый чат где я отвечаю. Мы не бросаем вас с уроками». Показать Алмаза: «Абсолютный новичок — за один вечер сделал бота».
+      </div>
+    </div>
+
+    <!-- 9 -->
+    <div class="objection-card low">
+      <div class="objection-header">
+        <div class="objection-title">9. Технические барьеры — VPN, заблокировано, нет доступа</div>
+        <span class="objection-freq freq-low">Умеренно · ~8 упоминаний</span>
+      </div>
+      <div class="objection-quotes">
+        <div class="quote-box">«Вопрос по эффективности предоставленного VPN» — опытный клиент</div>
+        <div class="quote-box">«Заблокировали Google Colab» — фрилансер, IT</div>
+        <div class="quote-box">«WhatsApp нестабилен, Яндекс не работает даже с VPN» — технические трудности с оплатой</div>
+        <div class="quote-box">«Lovable не работает ни через DNS, ни через VPN» — из чата день 2</div>
+      </div>
+      <div class="objection-content-tip">
+        <strong>Как закрыть в эфире:</strong> Проговорить в начале дня 3: «Если у вас не работает Lovable — вот альтернатива [X]. Если VPN не подходит — вот инструкция». Показать что в траектории есть техподдержка по инструментам. Убрать барьер входа в первые 5 минут.
+      </div>
+    </div>
+
+    <!-- 10 -->
+    <div class="objection-card low">
+      <div class="objection-header">
+        <div class="objection-title">10. Недоверие / «я вас не знаю» / нет доверия к менеджеру</div>
+        <span class="objection-freq freq-low">Умеренно · ~8 упоминаний</span>
+      </div>
+      <div class="objection-quotes">
+        <div class="quote-box">«Главное возражение — недоверие к незнакомому менеджеру/компании: я вас не знаю» — Татьяна</div>
+        <div class="quote-box">«Мне надо, чтобы это был человек к которому у меня возникло полное доверие... пока не готова» — технический специалист</div>
+        <div class="quote-box">«Уже давал обратную связь», «Не будем дальше продолжать... Я вас не знаю» — старый опыт с другой командой</div>
+      </div>
+      <div class="objection-content-tip">
+        <strong>Как закрыть в эфире:</strong> Доверие строится через историю, а не через скрипт ОП. В офферном блоке — показать себя как человека: личная история практикума «8 марта», конкретные числа, реакции из чата в прямом эфире. Чем больше личности Димы — тем меньше «я вас не знаю».
+      </div>
+    </div>
+
+    <!-- Needs analysis -->
+    <div class="section-title" style="font-size:1.1rem;margin-top:2rem">Потребности клиентов — что реально нужно</div>
+    <div class="bar-chart" id="op-needs-chart"></div>
+
+    <!-- Content plan -->
+    <div class="section-title" style="font-size:1.1rem;margin-top:2rem">Темы для контента / эфира на основе возражений ОП</div>
+    <div class="insight-grid">
+      <div class="insight-card positive">
+        <div class="insight-icon">💰</div>
+        <div class="insight-title">«Считаем окупаемость вместе»</div>
+        <div class="insight-text">Пост/эфир: «Сколько стоит 1 час вашей работы? А теперь: сколько стоит проект для клиента? Вот ваша окупаемость.» Закрывает возражение «дорого» через математику, а не через обесценивание цены.</div>
+      </div>
+      <div class="insight-card positive">
+        <div class="insight-icon">⚡</div>
+        <div class="insight-title">«Первый результат за 1 вечер»</div>
+        <div class="insight-text">История Алмаза — «я после эфира попробовал, и к моему удивлению получилось». Закрывает «не справлюсь» и «нет времени». Формат: скриншот бота + 3 предложения от реального участника.</div>
+      </div>
+      <div class="insight-card positive">
+        <div class="insight-icon">🤝</div>
+        <div class="insight-title">«Что входит в сопровождение»</div>
+        <div class="insight-text">Объяснить конкретно что получит человек: живые сессии, чат поддержки, проверка работ, доступ к записям. Закрывает «запутанное обучение», «не к кому обратиться», «не понимаю что получу».</div>
+      </div>
+      <div class="insight-card warning">
+        <div class="insight-icon">🏦</div>
+        <div class="insight-title">«Как оплатить если банк отказал»</div>
+        <div class="insight-text">Отдельный пост с вариантами: Яндекс.Сплит, Тинькофф, Сбер, внутренняя рассрочка, перевод по реквизитам. Закрывает 30+ человек с банкротством, самозапретами, арестами счетов.</div>
+      </div>
+      <div class="insight-card warning">
+        <div class="insight-icon">🎯</div>
+        <div class="insight-title">«Это не курс — это проект»</div>
+        <div class="insight-text">Разграничить: обычный курс = теория, записи, задания. Траектория = реальный проект за 3 месяца, конкретный результат в деньгах. Закрывает «уже много курсов» и «предыдущие неудачи».</div>
+      </div>
+      <div class="insight-card neutral">
+        <div class="insight-icon">📅</div>
+        <div class="insight-title">«Почему именно сейчас»</div>
+        <div class="insight-text">Стоимость ожидания: «Каждый месяц без навыка = упущенные клиенты». Дедлайн без давления: набор закрывается, количество мест ограничено сопровождением. Закрывает «подумаю» и «пока не готова».</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// 2-level navigation
+const sectionMap = {
+  day1:    { subtabs: 'subtabs-day1',    defaultTab: 'portraits' },
+  day2:    { subtabs: 'subtabs-day2',    defaultTab: 'day2-overview' },
+  compare: { subtabs: null,              defaultTab: 'compare' },
+  op:      { subtabs: null,              defaultTab: 'op-objections' },
+};
+
+let currentSection = 'day1';
+
+function showSection(section) {
+  // Update section buttons
+  document.querySelectorAll('.nav-section-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.section === section);
+  });
+
+  // Hide all subtab bars
+  document.querySelectorAll('.subtabs').forEach(bar => bar.style.display = 'none');
+
+  // Show subtabs for this section if any
+  const cfg = sectionMap[section];
+  if (cfg.subtabs) {
+    document.getElementById(cfg.subtabs).style.display = 'flex';
+    // Activate first subtab
+    const firstSubtab = document.querySelector(`#${cfg.subtabs} .subtab`);
+    document.querySelectorAll(`#${cfg.subtabs} .subtab`).forEach(t => t.classList.remove('active'));
+    firstSubtab && firstSubtab.classList.add('active');
+  }
+
+  // Show the default tab content
+  showTabContent(cfg.defaultTab);
+  currentSection = section;
+}
+
+function showTab(tabId, el) {
+  // Deactivate all subtabs in the current bar
+  const cfg = sectionMap[currentSection];
+  if (cfg.subtabs) {
+    document.querySelectorAll(`#${cfg.subtabs} .subtab`).forEach(t => t.classList.remove('active'));
+  }
+  el && el.classList.add('active');
+  showTabContent(tabId);
+}
+
+function showTabContent(tabId) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  const target = document.getElementById(tabId);
+  if (target) target.classList.add('active');
+}
+
+// Bar chart renderer
+function renderBarChart(containerId, data, colorFn) {
+  const container = document.getElementById(containerId);
+  const maxVal = Math.max(...data.map(d => d.value));
+
+  data.sort((a, b) => b.value - a.value);
+
+  data.forEach((item, i) => {
+    const pct = (item.value / maxVal) * 100;
+    const color = colorFn ? colorFn(i) : 'var(--accent)';
+
+    const barItem = document.createElement('div');
+    barItem.className = 'bar-item';
+    barItem.innerHTML = `
+      <div class="bar-label">${item.label}</div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:0%;background:${color}">${item.value}</div>
+      </div>
+    `;
+
+    if (item.quotes) {
+      const detail = document.createElement('div');
+      detail.className = 'detail-panel';
+      detail.innerHTML = `<h3>${item.label}</h3>${item.job ? `<p style="color:var(--accent-light);font-size:0.85rem;margin-bottom:0.75rem">${item.job}</p>` : ''}${item.quotes.map(q => `<div class="quote-box" style="margin-bottom:0.5rem">${q}</div>`).join('')}`;
+
+      barItem.addEventListener('click', () => {
+        const isOpen = detail.classList.contains('open');
+        container.querySelectorAll('.detail-panel').forEach(d => d.classList.remove('open'));
+        if (!isOpen) detail.classList.add('open');
+      });
+
+      container.appendChild(barItem);
+      container.appendChild(detail);
+    } else {
+      container.appendChild(barItem);
+    }
+
+    // Animate
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        barItem.querySelector('.bar-fill').style.width = pct + '%';
+      });
+    });
+  });
+}
+
+// Colors
+const gradients = [
+  'linear-gradient(90deg, #6c5ce7, #a29bfe)',
+  'linear-gradient(90deg, #00cec9, #55efc4)',
+  'linear-gradient(90deg, #e17055, #fab1a0)',
+  'linear-gradient(90deg, #fdcb6e, #ffeaa7)',
+  'linear-gradient(90deg, #74b9ff, #a29bfe)',
+  'linear-gradient(90deg, #fd79a8, #fdcb6e)',
+  'linear-gradient(90deg, #636e72, #b2bec3)',
+  'linear-gradient(90deg, #00b894, #55efc4)',
+  'linear-gradient(90deg, #e17055, #fdcb6e)',
+];
+
+// Jobs data
+renderBarChart('jobs-chart', [
+  { label: 'Заработать деньги', value: 118, job: 'Когда я хочу увеличить доход → освоить вайбкодинг → новый источник заработка', quotes: ['«Научиться зарабатывать на этом» — Любовь', '«Как применять для заработка» — Галина', '«Обучиться, чтобы иметь дополнительный заработок» — Наталья', '«ЛЕЖ.ИНВ. 18 ЛЕТ. ДОП. ЗАРАБОТОК» — Андрей'] },
+  { label: 'Создать продукт', value: 108, job: 'Когда у меня есть идея → создать без программистов → запустить быстро и дёшево', quotes: ['«Сделать CRM для своей компании и потом подобные продавать» — Ирина', '«Хочу чтобы клиент общался с ботом-ИИ» — Михаил', '«Сделать приложение для строительной организации» — Людмила'] },
+  { label: 'Научиться продавать', value: 72, job: 'Когда я создал продукт → научиться продавать → получать деньги', quotes: ['«Я не умею предлагать свои услуги» — Светлана', '«Мне кажется что у клиентов нет денег» — Венера', '«Как быстро продавать на Авито свои продукты» — Надежда'] },
+  { label: 'Разобраться в инструментах', value: 55, job: 'Когда хочу начать → понять что использовать → получить доступ', quotes: ['«Что такое вайбкодинг?» — Vladimir', '«Google AI Studio не работает, блочит регион» — DJ', '«В бесплатном тарифе клода можно вайбкодить?» — Ана'] },
+  { label: 'Найти клиентов', value: 35, job: 'Когда освоил навык → найти клиентов → начать зарабатывать', quotes: ['«Боль фриланса — как найти клиентов» — Светлана', '«Как привлечь клиентов?» — Agnese', '«Главное кому продавать?» — Любовь'] },
+  { label: 'Автоматизировать бизнес', value: 34, job: 'Когда много рутины → автоматизировать → освободить время', quotes: ['«Автоматизировать работу менеджера ВБ» — Ирина', '«Упростить все процессы в суши-баре» — Михаил', '«Масштабирование через мобильное приложение» — Гурам'] },
+  { label: 'Довести до продакшна', value: 21, job: 'Когда есть прототип → довести до рабочего продукта → дать клиенту ссылку', quotes: ['«15 приложений в студии и ни одного работающего за её пределами» — Мария', '«Как код превратить в продукт?» — Константин', '«Куда этот сайт размещать?» — Гурам'] },
+  { label: 'Сменить профессию', value: 11, job: 'Когда устал от работы → новая профессия → удалённо и на себя', quotes: ['«Водитель такси, хочу поменять работу и зарабатывать из дома» — Владимир', '«Поменять профессию кочегара на удалённую» — Александр', '«Уйти с найма, навыков ноль» — Айдын'] },
+  { label: 'Понять свою нишу', value: 6, job: 'Когда не знаю нишу → определить направление → не тратить время', quotes: ['«Пенсионерка — не знаю чем могу быть полезной» — Ольга', '«Создала AI-агента, но не могу определить сферу» — Галина'] },
+], (i) => gradients[i % gradients.length]);
+
+// Pains data
+renderBarChart('pains-chart', [
+  { label: '«Не получится самому»', value: 49, quotes: ['«Когда ты делаешь — всё понятно, а самостоятельно — затыки» — Оля', '«Не победить тараканов в голове» — Оля', '«А если не смогу, а если не сделаю качественно» — Ермаков Антон'] },
+  { label: 'Техническая пропасть', value: 43, quotes: ['«15 приложений в студии и ни одного за её пределами. Куча ошибок. Каждый раз новых.» — Мария', '«Не понимаю про сервера, хостинги, API» — Мария', '«Как код превратить в продукт?» — Константин'] },
+  { label: 'Не умею продавать', value: 35, quotes: ['«Я не умею предлагать свои услуги» — Светлана', '«Мне кажется у клиентов нет денег» — Венера', '«Я плохо переношу отказы» — Елена'] },
+  { label: 'Дорого / нет денег', value: 16, quotes: ['«Так он ещё и платный?» — Юра', '«100 долларов отбивать несколько лет» — Юра', '«Поделитесь подпиской клода, хоть обучиться» — Александра'] },
+  { label: 'Блокировки РФ', value: 12, quotes: ['«Google AI Studio блочит регион, не могу зайти много дней» — DJ', '«Gemini через VPN не работает, Гугл видит что из РФ» — Юрий', '«Подскажите где делать если никуда не получается войти даже с VPN» — Эмилия'] },
+  { label: 'Не знаю свою нишу', value: 7, quotes: ['«Не пойму что мне ближе» — Светлана', '«Не знаю чем могу быть полезной» — Ольга'] },
+], (i) => {
+  const colors = ['linear-gradient(90deg, #ff6b6b, #ee5a24)', 'linear-gradient(90deg, #e17055, #fab1a0)', 'linear-gradient(90deg, #fdcb6e, #f6e58d)', 'linear-gradient(90deg, #74b9ff, #a29bfe)', 'linear-gradient(90deg, #636e72, #b2bec3)', 'linear-gradient(90deg, #636e72, #b2bec3)'];
+  return colors[i] || colors[5];
+});
+
+// Products data
+renderBarChart('products-chart', [
+  { label: 'Телеграм-бот / чат-бот', value: 206 },
+  { label: 'Приложение (общее)', value: 103 },
+  { label: 'Сайт / лендинг', value: 42 },
+  { label: 'Репетитор / обучалка', value: 24 },
+  { label: 'AI-помощник', value: 22 },
+  { label: 'Парсер', value: 22 },
+  { label: 'Интернет-магазин', value: 8 },
+  { label: 'Калькулятор', value: 7 },
+  { label: 'CRM-система', value: 4 },
+], (i) => gradients[i % gradients.length]);
+
+// Professions data
+renderBarChart('professions-chart', [
+  { label: 'IT / Digital / SMM', value: 60 },
+  { label: 'Образование', value: 30 },
+  { label: 'Строительство / ремонт', value: 22 },
+  { label: 'Пенсионеры', value: 21 },
+  { label: 'Сетевой маркетинг', value: 18 },
+  { label: 'Копирайтинг / контент', value: 16 },
+  { label: 'Психология', value: 14 },
+  { label: 'Маркетплейсы', value: 13 },
+  { label: 'Юриспруденция', value: 10 },
+  { label: 'Логистика / транспорт', value: 10 },
+  { label: 'Продажи', value: 9 },
+  { label: 'Общепит / еда', value: 9 },
+  { label: 'Бьюти', value: 9 },
+  { label: 'Медицина', value: 8 },
+  { label: 'Недвижимость', value: 8 },
+  { label: 'Бухгалтерия / финансы', value: 7 },
+  { label: 'Безработные', value: 6 },
+  { label: 'Фриланс', value: 4 },
+], (i) => gradients[i % gradients.length]);
+
+// ========== ДЕНЬ 2 CHARTS ==========
+
+// Day 2 Jobs
+renderBarChart('d2-jobs-chart', [
+  { label: 'Разобраться в инструментах', value: 98, job: 'Lovable, VPN, бесплатные тарифы — люди хотят начать, но упираются в технические барьеры', quotes: ['Дмитр: «Lovable почему-то не работает ни через DNS, ни через VPN»', 'Матиас Каспаров: «Дмитрий, я не очень понимаю, где именно стоит начинать — у меня ничего не работает»', 'Светлана: «а Клод код без VPN не работает?»', 'Василий Касатонов: «а это можно на бесплатном варианте?»'] },
+  { label: 'Научиться продавать', value: 71, job: 'После демо бота аудитория поняла что это реально — теперь хотят продавать', quotes: ['Марина: «а как его передать клиенту?»', 'Павел Гильманов: «Генерация постов и прогревов с визуалом. Могу сделать и продавать — спрос есть»', 'Ирина: «Продавать услуги психолога»', 'ирина: «продажа путёвок в санатории — можно»'] },
+  { label: 'Создать продукт', value: 69, job: 'Появились первые результаты — люди возвращаются с подтверждёнными идеями', quotes: ['Алмаз: «Я после эфира попробовал создать бота — и к моему удивлению получилось»', 'Артур: «Калькулятор для расчёта мебели на заказ»', 'Валентина Лагуткина: «Я вчера создала первое своё приложение»'] },
+  { label: 'Найти клиентов', value: 45, job: 'Знают что создавать — не знают где брать клиентов', quotes: ['Sergo: «Где брать лидов на автомате?»', 'Владимир: «Приложение для лидогенерации на основе калькулятора»', 'Sergo: «Не проблема создать, проблема — клиенты. Чтоб они шли на автомате»'] },
+  { label: 'Заработать деньги', value: 20, job: 'Основная мотивация сохраняется, но уже более конкретная', quotes: ['Наталья: «Как филолог с высшим образованием, хотела бы зарабатывать на работе с текстами»', 'Николай: «Хочу создать приложение для расчёта ДРР с API к Ozon»'] },
+  { label: 'Довести до продакшна', value: 19, job: 'Есть прототип — не знают как довести до рабочей ссылки', quotes: ['Вадим: «как и где разместить приложение»', 'Гурам: «как потом приложение перенести на сайт и в Android и iOS?»'] },
+  { label: 'Автоматизировать бизнес', value: 5, job: 'Хотят убрать рутину из действующего бизнеса', quotes: ['Дариха: «Автоматизация бизнеса»', 'Sergo: «Чтоб клиенты шли на автомате, а не доставать людей»'] },
+  { label: 'Понять нишу', value: 3, job: 'Небольшой процент ещё не определился', quotes: ['Елена: «Что можно сделать для водителей спецтехники?»', 'Ксюша: «а что нельзя пока сделать с вайбкодингом?»'] },
+], (i) => gradients[i % gradients.length]);
+
+// Day 2 Products
+renderBarChart('d2-products-chart', [
+  { label: 'Телеграм-бот / чат-бот', value: 129, quotes: ['Алмаз: «Я после эфира попробовал создать бота — и к моему удивлению получилось»', 'Оля: «Дим, вопросик. Вчера же обещал парсера — уж очень хочется его ручками пощупать»'] },
+  { label: 'Приложение (общее)', value: 80, quotes: ['Валентина Лагуткина: «Я вчера создала первое своё приложение — Калькулятор экономии для клиентов»', 'Guzal: «Gpt Chat тоже делает приложение — я сегодня делала приложение по подготовке к ОГЭ»'] },
+  { label: 'AI-агент', value: 18, quotes: ['Светлана: «Агенты уже созданные или он сам делает?»', 'Павел Гильманов: «Эх, интернет вылетел... про 5 агентов параллельно интересно очень»', 'Инна: «Этот ИИ только для агентов?»', 'Олеся: «для турагентов что можно создать?»'] },
+  { label: 'Сайт / лендинг', value: 17, quotes: ['Анастасия: «На бесплатной Гугл подписке не получится сделать сайт?»', 'Инна: «100 готовых решений (сайт) — остаётся в доступе навсегда или только на время?»'] },
+  { label: 'Интернет-магазин', value: 9, quotes: ['Vet: «Я хочу создать интернет-магазин одежды с корзиной и примеркой моделей»', 'Шура: «Выбор товара с наименьшей ценой среди всех магазинов своего города»'] },
+  { label: 'Парсер', value: 6, quotes: ['Тата: «Лучше парсера создать — он всем пригодится»', 'Екатерина: «А можно сделать парсера по блогерам по заданным критериям: подписчики, тематика, активность»'] },
+  { label: 'Калькулятор', value: 4, quotes: ['Артур: «Калькулятор для расчёта мебели на заказ»', 'Владимир: «Приложение для лидогенерации на основе калькулятора»'] },
+  { label: 'AI-помощник', value: 2, quotes: ['Milla: «А чем агент от ассистента отличается?»'] },
+  { label: 'CRM-система', value: 1 },
+], (i) => gradients[i % gradients.length]);
+
+// Day 2 Professions
+renderBarChart('d2-professions-chart', [
+  { label: 'IT / Digital / SMM', value: 38 },
+  { label: 'Маркетплейсы', value: 12 },
+  { label: 'Образование / репетиторы', value: 10 },
+  { label: 'Сетевой маркетинг', value: 8 },
+  { label: 'Строительство / ремонт', value: 8 },
+  { label: 'Юриспруденция', value: 5 },
+  { label: 'Психология', value: 4 },
+  { label: 'Пенсионеры', value: 4 },
+  { label: 'Копирайтинг / контент', value: 4 },
+  { label: 'Недвижимость', value: 3 },
+  { label: 'Логистика / транспорт', value: 4 },
+  { label: 'Бьюти', value: 3 },
+  { label: 'Бухгалтерия / финансы', value: 2 },
+  { label: 'Общепит / еда', value: 2 },
+  { label: 'Медицина', value: 1 },
+], (i) => gradients[i % gradients.length]);
+
+// ========== СРАВНЕНИЕ CHARTS ==========
+
+// Compare D1 Jobs (compact)
+renderBarChart('compare-d1-jobs', [
+  { label: 'Заработать деньги', value: 118 },
+  { label: 'Создать продукт', value: 108 },
+  { label: 'Научиться продавать', value: 72 },
+  { label: 'Инструменты', value: 55 },
+  { label: 'Найти клиентов', value: 35 },
+], (i) => ['linear-gradient(90deg,#6c5ce7,#a29bfe)','linear-gradient(90deg,#00cec9,#55efc4)','linear-gradient(90deg,#e17055,#fab1a0)','linear-gradient(90deg,#fdcb6e,#ffeaa7)','linear-gradient(90deg,#74b9ff,#a29bfe)'][i]);
+
+// Compare D2 Jobs (compact)
+renderBarChart('compare-d2-jobs', [
+  { label: 'Инструменты', value: 98 },
+  { label: 'Научиться продавать', value: 71 },
+  { label: 'Создать продукт', value: 69 },
+  { label: 'Найти клиентов', value: 45 },
+  { label: 'Заработать деньги', value: 20 },
+], (i) => ['linear-gradient(90deg,#00cec9,#55efc4)','linear-gradient(90deg,#e17055,#fab1a0)','linear-gradient(90deg,#6c5ce7,#a29bfe)','linear-gradient(90deg,#74b9ff,#a29bfe)','linear-gradient(90deg,#fdcb6e,#ffeaa7)'][i]);
+
+// Compare D1 Pains (compact)
+renderBarChart('compare-d1-pains', [
+  { label: '«Не получится самому»', value: 49 },
+  { label: 'Техническая пропасть', value: 43 },
+  { label: 'Не умею продавать', value: 35 },
+  { label: 'Дорого / нет денег', value: 16 },
+  { label: 'Блокировки РФ', value: 12 },
+], (i) => ['linear-gradient(90deg,#ff6b6b,#ee5a24)','linear-gradient(90deg,#e17055,#fab1a0)','linear-gradient(90deg,#fdcb6e,#f6e58d)','linear-gradient(90deg,#74b9ff,#a29bfe)','linear-gradient(90deg,#636e72,#b2bec3)'][i]);
+
+// Compare D2 Pains (compact)
+renderBarChart('compare-d2-pains', [
+  { label: 'Дорого / нет денег', value: 39 },
+  { label: '«Не получится самому»', value: 16 },
+  { label: 'Техническая беспомощность', value: 8 },
+  { label: 'Блокировки РФ', value: 6 },
+], (i) => ['linear-gradient(90deg,#74b9ff,#a29bfe)','linear-gradient(90deg,#ff6b6b,#ee5a24)','linear-gradient(90deg,#e17055,#fab1a0)','linear-gradient(90deg,#636e72,#b2bec3)'][i]);
+
+// ========== ВОЗРАЖЕНИЯ ОП ==========
+
+renderBarChart('op-objections-chart', [
+  { label: 'Дорого / нет денег', value: 50, quotes: ['«Цена смущает, да. Очень-очень смущает»', '«99 000 — финансовые. Потому что 99 000 у вас тариф стоит»', '«Для меня нереально — цена 100 000 или даже 5 000 в месяц»', '«А если бы зарплаты были соизмеримы... оплатила бы хоть сейчас»'] },
+  { label: 'Проблемы с рассрочкой / банком', value: 30, quotes: ['«Банки... у меня там самозапрет стоит»', '«Банкротство действует до ноября; кредит невозможен»', '«Неодобрение рассрочки банком по возрасту»', '«Плохая кредитная история. Комфортный платёж — 10 000 руб./мес.»'] },
+  { label: 'Нет времени / занят', value: 20, quotes: ['«Пока нет времени на это»', '«В ночную смену уезжаю, времени не хватает»', '«Эта неделя вся забита»', '«Слишком длинные эфиры, мозг к девяти выключился»'] },
+  { label: 'Уже учусь / много курсов', value: 18, quotes: ['«Я ещё на Эксперте, и я не до конца его прошла»', '«Три текущих обучения»', '«Думаю: то не освоила до конца, а уже новое»'] },
+  { label: '«Подумаю» / пока не готова', value: 15, quotes: ['«Давайте я подумаю над этим»', '«Пока не готова — хочу сначала посмотреть эфиры»', '«Буду смотреть третий день, потом решу»'] },
+  { label: 'Не верю в результат / скептицизм', value: 12, quotes: ['«Не оправдал ожидания», «Предыдущие неудачи бьют по голове»', '«Whitecoding столько не стоит»', '«Не верится мне в это», «Не вижу больших денег»', '«Обучение закончилось — не к кому обратиться»'] },
+  { label: 'Не понимаю что получу', value: 10, quotes: ['«Не знаю, что будет в программе и сколько стоит»', '«Не видит нужных технологий в курсе»', '«Я не знаю ни цену, ни что будет даваться»'] },
+  { label: 'Страх не справиться самому', value: 10, quotes: ['«Самостоятельно вряд ли смогу разобраться»', '«Мне надо, чтобы взяли за руку и повели»', '«Запутанное обучение, где у нас сбой в понимании»'] },
+  { label: 'Технические барьеры (VPN и пр.)', value: 8, quotes: ['«Вопрос по эффективности предоставленного VPN»', '«Заблокировали Google Colab»', '«WhatsApp нестабилен, Яндекс не работает даже с VPN»'] },
+  { label: 'Недоверие / «я вас не знаю»', value: 8, quotes: ['«Недоверие к незнакомому менеджеру: я вас не знаю»', '«Мне надо чтобы это был человек к которому у меня возникло полное доверие»'] },
+], (i) => {
+  const colors = [
+    'linear-gradient(90deg,#ff6b6b,#ee5a24)',
+    'linear-gradient(90deg,#e17055,#fab1a0)',
+    'linear-gradient(90deg,#fdcb6e,#ffeaa7)',
+    'linear-gradient(90deg,#fdcb6e,#f6e58d)',
+    'linear-gradient(90deg,#74b9ff,#a29bfe)',
+    'linear-gradient(90deg,#fd79a8,#fdcb6e)',
+    'linear-gradient(90deg,#6c5ce7,#a29bfe)',
+    'linear-gradient(90deg,#00cec9,#55efc4)',
+    'linear-gradient(90deg,#636e72,#b2bec3)',
+    'linear-gradient(90deg,#636e72,#dfe6e9)',
+  ];
+  return colors[i] || colors[9];
+});
+
+// OP Needs chart
+renderBarChart('op-needs-chart', [
+  { label: 'Дополнительный заработок (50–200K/мес)', value: 65 },
+  { label: 'Создать продукт для своей ниши', value: 45 },
+  { label: '«Взяли за руку и повели» — сопровождение', value: 40 },
+  { label: 'Смена профессии / уйти от найма', value: 25 },
+  { label: 'Автоматизировать свой бизнес', value: 20 },
+  { label: 'Найти клиентов / первые продажи', value: 18 },
+  { label: 'Гибкие условия оплаты / рассрочка', value: 30 },
+  { label: 'Конкретный результат, а не теория', value: 35 },
+], (i) => gradients[i % gradients.length]);
+
+</script>
+
+</body>
+</html>
