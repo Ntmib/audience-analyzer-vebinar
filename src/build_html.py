@@ -104,26 +104,41 @@ CSS = r"""
   --red:#ff6b6b;--red-dim:#ff6b6b20;
 }
 
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
-.container{max-width:1200px;margin:0 auto;padding:2rem 1.5rem}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;overflow:hidden}
 
-/* Header */
-.header{text-align:center;margin-bottom:2rem;padding:2rem 0}
-.header h1{font-size:2rem;font-weight:800;background:linear-gradient(135deg,var(--accent-light),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.5rem}
-.header .subtitle{color:var(--text-dim);font-size:1rem}
-.stats-row{display:flex;gap:1rem;justify-content:center;margin-top:1.5rem;flex-wrap:wrap}
-.stat-badge{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.75rem 1.25rem;text-align:center}
-.stat-badge .num{font-size:1.5rem;font-weight:800;color:var(--accent-light)}
-.stat-badge .label{font-size:.75rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px}
+/* App Layout — sidebar + main */
+.app-layout{display:grid;grid-template-columns:280px 1fr;height:100vh}
+.sidebar{background:var(--surface);border-right:1px solid var(--border);padding:1.25rem 1rem;overflow-y:auto;display:flex;flex-direction:column}
+.sidebar-brand{padding:0 .5rem 1.25rem;border-bottom:1px solid var(--border);margin-bottom:1rem}
+.sidebar-brand h1{font-size:1.05rem;font-weight:800;background:linear-gradient(135deg,var(--accent-light),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sidebar-brand .sb-sub{font-size:.7rem;color:var(--text-dim);margin-top:.2rem}
+.sidebar-stats{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-bottom:1.25rem}
+.sidebar-stat{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:.4rem .5rem;text-align:center}
+.sidebar-stat .num{font-size:1rem;font-weight:800;color:var(--accent-light)}
+.sidebar-stat .label{font-size:.55rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px}
+.sidebar-section-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);padding:0 .4rem;margin-bottom:.5rem}
+.launch-list{flex:1;display:flex;flex-direction:column;gap:.5rem;overflow-y:auto}
+.main-content{padding:2rem 2.5rem;overflow-y:auto}
 
-/* Level 0: Launch selector */
-.launch-bar{display:flex;gap:.5rem;margin-bottom:1.5rem;flex-wrap:wrap;justify-content:center}
-.launch-pill{padding:.6rem 1.4rem;border-radius:12px;border:2px solid var(--border);background:var(--surface);cursor:pointer;text-align:center;transition:all .2s;user-select:none;position:relative}
-.launch-pill:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 6px 20px #6c5ce720}
-.launch-pill.active{border-color:var(--accent);background:linear-gradient(135deg,#6c5ce715,#6c5ce705);box-shadow:0 4px 16px #6c5ce730}
-.launch-pill .lp-name{font-size:.9rem;font-weight:700}
-.launch-pill .lp-dates{font-size:.7rem;color:var(--text-dim)}
-.launch-pill .lp-badge{position:absolute;top:-6px;right:-6px;background:var(--accent);color:#fff;font-size:.6rem;font-weight:800;padding:2px 6px;border-radius:8px}
+/* Mobile sidebar */
+.sidebar-toggle{display:none;position:fixed;bottom:1.25rem;left:1.25rem;z-index:100;width:48px;height:48px;border-radius:14px;background:var(--accent);border:none;color:#fff;font-size:1.3rem;cursor:pointer;box-shadow:0 4px 20px #6c5ce740;align-items:center;justify-content:center}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:40}
+
+/* Launch cards in sidebar */
+.launch-card{padding:.75rem .8rem;border-radius:12px;border:2px solid var(--border);background:var(--surface-2);cursor:pointer;transition:all .2s;user-select:none;position:relative}
+.launch-card:hover{border-color:var(--accent);background:var(--surface-3)}
+.launch-card.active{border-color:var(--accent);background:linear-gradient(135deg,#6c5ce718,#6c5ce708);box-shadow:0 0 20px #6c5ce715}
+.launch-card .lc-name{font-size:.82rem;font-weight:700;margin-bottom:.1rem}
+.launch-card .lc-dates{font-size:.68rem;color:var(--text-dim);margin-bottom:.4rem}
+.launch-card .lc-stats{display:flex;gap:.6rem;flex-wrap:wrap}
+.launch-card .lc-stat{font-size:.62rem;color:var(--text-dim)}
+.launch-card .lc-stat b{color:var(--text);font-weight:700}
+.launch-card .lc-badge{position:absolute;top:8px;right:8px;background:var(--accent);color:#fff;font-size:.55rem;font-weight:800;padding:2px 6px;border-radius:8px}
+
+/* Header inside main */
+.header{margin-bottom:1.5rem;padding:0 0 1.25rem;border-bottom:1px solid var(--border)}
+.header h1{font-size:1.5rem;font-weight:800;background:linear-gradient(135deg,var(--accent-light),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.25rem}
+.header .subtitle{color:var(--text-dim);font-size:.85rem}
 
 /* Level 1: Source tabs */
 .source-tabs{display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap;padding:.6rem .8rem;background:var(--surface);border:1px solid var(--border);border-radius:14px}
@@ -307,15 +322,22 @@ p.portrait-who{font-size:.85rem;color:var(--text-dim)}
   .fud-grid{grid-template-columns:1fr}
   .ve-grid{grid-template-columns:repeat(2,1fr)}
   .pmf-breakdown{grid-template-columns:repeat(2,1fr)}
+  .app-layout{grid-template-columns:1fr}
+  .sidebar{display:none;position:fixed;top:0;left:0;bottom:0;width:280px;z-index:50}
+  .sidebar.open{display:flex}
+  .sidebar-toggle{display:flex}
+  .sidebar-overlay.open{display:block}
+  .main-content{padding:1.5rem 1rem}
+  body{overflow:auto}
 }
 @media(max-width:768px){
   .bar-label{width:120px;font-size:.75rem}
   .portrait-grid{grid-template-columns:1fr}
   .compare-row{grid-template-columns:1fr}
-  .header h1{font-size:1.5rem}
-  .container{padding:1rem}
+  .header h1{font-size:1.3rem}
   .force-label{width:100px}
   .ve-grid{grid-template-columns:1fr 1fr}
+  .main-content{padding:1rem .75rem}
 }
 """
 
@@ -339,12 +361,20 @@ function initDashboard() {
 
 function showLaunch(idx) {
   currentLaunch = idx;
-  document.querySelectorAll('.launch-pill').forEach(function(p) {
+  document.querySelectorAll('.launch-card').forEach(function(p) {
     p.classList.toggle('active', parseInt(p.dataset.launch) === idx);
   });
   document.querySelectorAll('.launch-panel').forEach(function(p) {
     p.classList.toggle('visible', parseInt(p.dataset.launch) === idx);
   });
+  var card = document.querySelector('.launch-card[data-launch="' + idx + '"]');
+  if (card) {
+    var h = document.querySelector('.header h1');
+    var s = document.querySelector('.header .subtitle');
+    if (h) h.textContent = card.querySelector('.lc-name').textContent;
+    if (s) s.textContent = card.querySelector('.lc-dates').textContent;
+  }
+  closeSidebar();
   if (!currentSource[idx]) {
     var firstTab = document.querySelector('.launch-panel[data-launch="' + idx + '"] .source-tab');
     if (firstTab) currentSource[idx] = firstTab.dataset.source;
@@ -408,6 +438,15 @@ function toggleExpand(id) {
   if (!header || !body) return;
   header.classList.toggle('open');
   body.classList.toggle('open');
+}
+
+function toggleSidebar(){
+  document.querySelector('.sidebar').classList.toggle('open');
+  document.querySelector('.sidebar-overlay').classList.toggle('open');
+}
+function closeSidebar(){
+  document.querySelector('.sidebar').classList.remove('open');
+  document.querySelector('.sidebar-overlay').classList.remove('open');
 }
 
 document.addEventListener('DOMContentLoaded', initDashboard);
@@ -1045,11 +1084,19 @@ def build_dashboard(launches, day2_data=None) -> str:
         sources = launch.get('sources', [])
         active = ' active' if li == 0 else ''
 
+        # Compute mini-stats for card
+        src_msgs = sum(s.get('data', {}).get('stats', {}).get('total_messages', 0) for s in sources)
+        src_people = sum(s.get('data', {}).get('stats', {}).get('unique_people', 0) for s in sources)
         launch_pills.append(
-            f'<div class="launch-pill{active}" data-launch="{li}" onclick="showLaunch({li})">'
-            f'<div class="lp-name">{_esc(name)}</div>'
-            f'<div class="lp-dates">{_esc(dates)}</div>'
-            f'<div class="lp-badge">{len(sources)}</div>'
+            f'<div class="launch-card{active}" data-launch="{li}" onclick="showLaunch({li})">' 
+            f'<div class="lc-name">{_esc(name)}</div>'
+            f'<div class="lc-dates">{_esc(dates)}</div>'
+            f'<div class="lc-stats">'
+            f'<span class="lc-stat"><b>{src_people}</b> чел.</span>'
+            f'<span class="lc-stat"><b>{src_msgs}</b> сообщ.</span>'
+            f'<span class="lc-stat"><b>{len(sources)}</b> источн.</span>'
+            f'</div>'
+            f'<div class="lc-badge">{len(sources)}</div>'
             f'</div>'
         )
 
@@ -1098,13 +1145,17 @@ def build_dashboard(launches, day2_data=None) -> str:
         panel_lines.append('</div>')  # launch-panel
         launch_panels.append('\n'.join(panel_lines))
 
-    # Show launch bar only if multiple launches
     launch_bar_html = ''
     if len(launches) > 1:
         launch_bar_html = '<div class="launch-bar">\n' + '\n'.join(launch_pills) + '\n</div>'
 
-    # Assemble final HTML
-    newline = '\n'
+    # Assemble final HTML — sidebar layout
+    first_launch_name = launches[0].get('name', 'Анализ аудитории')
+    first_launch_dates = launches[0].get('dates', '')
+    nl = '\n'
+
+    sidebar_cards = '\n'.join(launch_pills)
+
     html = f'''<!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -1117,22 +1168,36 @@ def build_dashboard(launches, day2_data=None) -> str:
 </head>
 <body>
 
-<div class="container">
+<div class="app-layout">
 
-  <div class="header">
-    <h1>Анализ целевой аудитории</h1>
-    <div class="subtitle">{_esc(first_name)} &middot; {_esc(first_dates)}</div>
-    <div class="stats-row">
-      <div class="stat-badge"><div class="num">{total_people}</div><div class="label">участников</div></div>
-      <div class="stat-badge"><div class="num">{total_msgs}</div><div class="label">сообщений</div></div>
-      <div class="stat-badge"><div class="num">{total_sources}</div><div class="label">источников</div></div>
-      <div class="stat-badge"><div class="num">{len(launches)}</div><div class="label">запусков</div></div>
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <h1>Анализ ЦА</h1>
+      <div class="sb-sub">JTBD \u00b7 Forces \u00b7 FUD \u00b7 PMF</div>
     </div>
-  </div>
+    <div class="sidebar-stats">
+      <div class="sidebar-stat"><div class="num">{total_people}</div><div class="label">участников</div></div>
+      <div class="sidebar-stat"><div class="num">{total_msgs}</div><div class="label">сообщений</div></div>
+      <div class="sidebar-stat"><div class="num">{total_sources}</div><div class="label">источников</div></div>
+      <div class="sidebar-stat"><div class="num">{len(launches)}</div><div class="label">запусков</div></div>
+    </div>
+    <div class="sidebar-section-label">Запуски</div>
+    <div class="launch-list">
+      {sidebar_cards}
+    </div>
+  </aside>
 
-  {launch_bar_html}
+  <div class="sidebar-overlay" onclick="closeSidebar()"></div>
+  <button class="sidebar-toggle" onclick="toggleSidebar()">\u2630</button>
 
-  {newline.join(launch_panels)}
+  <main class="main-content">
+    <div class="header">
+      <h1>{_esc(first_launch_name)}</h1>
+      <div class="subtitle">{_esc(first_launch_dates)}</div>
+    </div>
+
+    {nl.join(launch_panels)}
+  </main>
 
 </div>
 
