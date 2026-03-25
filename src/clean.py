@@ -74,10 +74,9 @@ def _is_moderator(name: str, moderator_names: list[str]) -> bool:
 
 
 def _clean_text(message: str) -> str:
-    """Normalize a message: collapse repeats, extra whitespace."""
-    msg = re.sub(r'(.)\1{4,}', r'\1', message)
-    msg = re.sub(r'([!?.]){3,}', r'\1', msg)
-    msg = re.sub(r'\s+', ' ', msg).strip()
+    """Light normalization: only collapse whitespace.
+    VoC principle: preserve exact customer language, emotions, punctuation."""
+    msg = re.sub(r'\s+', ' ', message).strip()
     return msg
 
 

@@ -59,8 +59,9 @@ def _match_any_in_list(text_lower: str, word_list: list[str]) -> bool:
     return any(w in text_lower for w in word_list)
 
 
-def _quote(msg: dict, max_len: int = 180) -> str:
-    return f"{msg['name']}: \u00ab{msg['message'][:max_len]}\u00bb"
+def _quote(msg: dict, max_len: int = 0) -> str:
+    """Format quote preserving FULL original text. VoC: never alter customer language."""
+    return f"{msg['name']}: \u00ab{msg['message']}\u00bb"
 
 
 # ---------------------------------------------------------------------------
@@ -822,12 +823,15 @@ def analyze_day(messages: list[dict]) -> dict:
                 if re.search(kw, text_lower):
                     cats.append(cat_name)
                     break
-        messages_archive.append({
+        entry = {
             'name': msg.get('name', ''),
             'message': msg['message'],
             'sender_id': msg.get('sender_id', ''),
             'categories': cats,
-        })
+        }
+        if 'raw_row' in msg:
+            entry['raw_row'] = msg['raw_row']
+        messages_archive.append(entry)
 
     return {
         'stats': stats,
