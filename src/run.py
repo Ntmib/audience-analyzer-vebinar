@@ -225,6 +225,34 @@ def print_summary(launch_result: dict):
 
 # ──────────────────── Main modes ────────────────────
 
+def result_to_launch(result: dict) -> dict:
+    """Convert process_launch result to build_dashboard launch format."""
+    meta = result['meta']
+    analysis = result['analysis']
+
+    TYPE_LABELS = {'chat': 'День', 'survey': 'Анкеты', 'sales': 'Отдел продаж'}
+
+    sources = []
+    chat_idx = 0
+    for key, src_info in result['sources'].items():
+        if key not in analysis:
+            continue
+        fmt = src_info['format']
+        if fmt == 'chat':
+            chat_idx += 1
+            label = f"День {chat_idx}"
+        else:
+            label = TYPE_LABELS.get(fmt, key)
+        sources.append({'type': fmt, 'label': label, 'data': analysis[key]})
+
+    return {
+        'id': result['launch_id'],
+        'name': meta.get('name', result['launch_id']),
+        'dates': meta.get('dates', ''),
+        'sources': sources,
+    }
+
+
 def mode_legacy(csv_path: Path):
     """Legacy mode: single CSV → single analysis."""
     print(f"[1/4] Очистка: {csv_path.name}")
@@ -274,35 +302,19 @@ def mode_single_launch(launch_dir: Path):
     print(f"[1/3] Обработка запуска: {launch_dir.name}")
     result = process_launch(launch_dir)
 
-    analysis = result['analysis']
-    if not analysis:
+    if not result['analysis']:
         print("Нет данных для анализа.")
         sys.exit(0)
 
-    # Build dashboard from available data
     print("[2/3] Сборка HTML-дашборда...")
-
-    # Use chat days for build_dashboard (day1/day2 comparison)
-    day1_key = 'chat_day1'
-    day2_key = 'chat_day2'
-
-    # If no chat data, use combined or first available
-    if day1_key not in analysis:
-        main_key = 'combined' if 'combined' in analysis else next(iter(analysis))
-        day1_data = analysis[main_key]
-        day2_data = None
-    else:
-        day1_data = analysis[day1_key]
-        day2_data = analysis.get(day2_key)
-
-    html = build_dashboard(day1_data, day2_data)
+    launch = result_to_launch(result)
+    html = build_dashboard([launch])
 
     output_dir = PROJECT_ROOT / 'output'
     output_dir.mkdir(parents=True, exist_ok=True)
     output_path = output_dir / 'dashboard.html'
     output_path.write_text(html, encoding='utf-8')
 
-    # Save JSON data
     json_path = save_launch_data(result, output_dir)
 
     print(f"[3/3] Готово!")
@@ -336,31 +348,14 @@ def mode_all_launches(input_dir: Path):
     for result in all_results:
         save_launch_data(result, output_dir)
 
-    # Build dashboard from first launch with data (or latest)
-    # For multi-launch: use last launch as primary
-    primary = all_results[-1] if all_results else None
-    if primary:
-        analysis = primary['analysis']
-        day1_key = 'chat_day1'
-        day2_key = 'chat_day2'
-
-        if day1_key not in analysis:
-            main_key = 'combined' if 'combined' in analysis else next(iter(analysis), None)
-            if main_key:
-                day1_data = analysis[main_key]
-            else:
-                day1_data = None
-            day2_data = None
-        else:
-            day1_data = analysis[day1_key]
-            day2_data = analysis.get(day2_key)
-
-        if day1_data:
-            print("Сборка HTML-дашборда...")
-            html = build_dashboard(day1_data, day2_data)
-            output_path = output_dir / 'dashboard.html'
-            output_path.write_text(html, encoding='utf-8')
-            print(f"Дашборд: {output_path}")
+    # Build multi-launch dashboard
+    all_launches = [result_to_launch(r) for r in all_results if r['analysis']]
+    if all_launches:
+        print("Сборка HTML-дашборда...")
+        html = build_dashboard(all_launches)
+        output_path = output_dir / 'dashboard.html'
+        output_path.write_text(html, encoding='utf-8')
+        print(f"Дашборд: {output_path}")
 
     # Print summaries
     print("\n" + "=" * 50)
