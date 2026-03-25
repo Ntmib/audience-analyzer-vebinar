@@ -1,0 +1,34 @@
+{
+  "levels": [
+    {
+      "name": "headline",
+      "label": "Headline-worthy",
+      "description": "Эмоция + боль/надежда. Для заголовков лендинга и email",
+      "criteria": {"min_length": 30, "has_emotion": true, "has_specifics": true}
+    },
+    {
+      "name": "proof",
+      "label": "Proof-worthy",
+      "description": "Конкретный результат с цифрами. Для кейсов и соцдоказательств",
+      "criteria": {"min_length": 25, "has_numbers": true}
+    },
+    {
+      "name": "objection",
+      "label": "Objection-revealing",
+      "description": "Страх/сомнение, которое можно закрыть. Для FAQ и возражений",
+      "criteria": {"min_length": 20, "is_fud": true}
+    },
+    {
+      "name": "desire",
+      "label": "Desire-expressing",
+      "description": "Мечта/цель в словах клиента. Для рекламных креативов",
+      "criteria": {"min_length": 15, "has_desire": true}
+    },
+    {
+      "name": "context",
+      "label": "Context-setting",
+      "description": "Описание ситуации. Для сторителлинга",
+      "criteria": {"min_length": 20}
+    }
+  ]
+}
