@@ -92,7 +92,7 @@ def _analyze_jtbd(messages: list[dict], jtbd_config: dict) -> list[dict]:
                 if re.search(kw, text_lower):
                     counter[cat_name] += 1
                     people[cat_name].add(msg['sender_id'])
-                    if len(quotes[cat_name]) < 5 and len(msg['message']) > 25:
+                    if len(quotes[cat_name]) < 20 and len(msg['message']) > 25:
                         quotes[cat_name].append(_quote(msg))
                     break
 
@@ -125,7 +125,7 @@ def _analyze_jobs_generic(messages: list[dict], config: dict) -> list[dict]:
             if _match_patterns(text_lower, cat_data['patterns']):
                 counter[cat_name] += 1
                 people[cat_name].add(msg['sender_id'])
-                if len(quotes[cat_name]) < 5 and len(msg['message']) > 25:
+                if len(quotes[cat_name]) < 20 and len(msg['message']) > 25:
                     quotes[cat_name].append(_quote(msg))
 
     return [
@@ -156,7 +156,7 @@ def _analyze_forces(messages: list[dict], forces_config: dict) -> dict:
             if _match_patterns(text_lower, force_data['patterns']):
                 counts[force_name] += 1
                 people[force_name].add(msg['sender_id'])
-                if len(quotes[force_name]) < 5 and len(msg['message']) > 25:
+                if len(quotes[force_name]) < 20 and len(msg['message']) > 25:
                     quotes[force_name].append(_quote(msg))
 
     drive = counts['push'] + counts['pull']
@@ -216,7 +216,7 @@ def _analyze_fud(messages: list[dict], fud_config: dict) -> dict:
             if _match_patterns(text_lower, fud_data['patterns']):
                 counts[fud_type] += 1
                 people[fud_type].add(msg['sender_id'])
-                if len(quotes[fud_type]) < 5 and len(msg['message']) > 25:
+                if len(quotes[fud_type]) < 20 and len(msg['message']) > 25:
                     quotes[fud_type].append(_quote(msg))
 
     fud_detail = []
@@ -606,11 +606,11 @@ def _analyze_pmf(messages: list[dict]) -> dict:
 
         if _match_any_in_list(text_lower, PMF_HOT):
             hot += 1
-            if len(hot_quotes) < 5:
+            if len(hot_quotes) < 20:
                 hot_quotes.append(_quote(msg))
         elif _match_any_in_list(text_lower, PMF_WARM):
             warm += 1
-            if len(warm_quotes) < 5:
+            if len(warm_quotes) < 20:
                 warm_quotes.append(_quote(msg))
         elif _match_any_in_list(text_lower, PMF_CURIOUS):
             curious += 1
@@ -812,8 +812,26 @@ def analyze_day(messages: list[dict]) -> dict:
         value_equation, products, message_hierarchy,
     )
 
+    # Full message archive for deep analysis
+    messages_archive = []
+    for msg in messages:
+        cats = []
+        text_lower = msg['message'].lower()
+        for cat_name, cat_data in jtbd_config.items():
+            for kw in cat_data['keywords']:
+                if re.search(kw, text_lower):
+                    cats.append(cat_name)
+                    break
+        messages_archive.append({
+            'name': msg.get('name', ''),
+            'message': msg['message'],
+            'sender_id': msg.get('sender_id', ''),
+            'categories': cats,
+        })
+
     return {
         'stats': stats,
+        'messages_archive': messages_archive,
         'jtbd': jtbd,
         'emotional_jobs': emotional_jobs,
         'social_jobs': social_jobs,

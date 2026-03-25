@@ -254,6 +254,68 @@ def clean_survey(input_path: str | Path) -> list[dict]:
     return messages
 
 
+
+def clean_survey_all(input_path: str | Path) -> list[dict]:
+    """
+    Load ALL rows from survey CSV without noise filtering.
+    Only skips completely empty rows.
+    Use when every response matters (large surveys, 500-5000 rows).
+
+    Returns:
+        List of dicts with keys: name, message, raw_row (all columns as dict)
+    """
+    input_path = Path(input_path)
+    messages: list[dict] = []
+
+    with open(input_path, 'r', encoding='utf-8') as f:
+        reader = csv.reader(f)
+        headers = next(reader, None)
+        if not headers:
+            return []
+
+        rows = list(reader)
+
+    text_col = _detect_text_column(headers, rows)
+    name_col = _detect_name_column(headers)
+
+    if text_col is None:
+        # If no text column detected, use the longest column
+        if rows:
+            avg_lens = []
+            for ci in range(len(headers)):
+                total = sum(len(r[ci]) if ci < len(r) else 0 for r in rows)
+                avg_lens.append(total / len(rows) if rows else 0)
+            text_col = avg_lens.index(max(avg_lens)) if avg_lens else 0
+        else:
+            return []
+
+    for row_idx, row in enumerate(rows):
+        if text_col >= len(row):
+            continue
+
+        message = row[text_col].strip()
+        if not message:  # skip only truly empty
+            continue
+
+        name = ''
+        if name_col is not None and name_col < len(row):
+            name = row[name_col].strip()
+
+        # Build raw_row dict for preserving all columns
+        raw_row = {}
+        for i, h in enumerate(headers):
+            if i < len(row):
+                raw_row[h] = row[i].strip()
+
+        messages.append({
+            'name': name or f'Респондент {row_idx + 1}',
+            'message': message,
+            'raw_row': raw_row,
+        })
+
+    return messages
+
+
 # ──────────────────── Sales cleaner ────────────────────
 
 def clean_sales(input_path: str | Path) -> list[dict]:
